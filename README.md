@@ -2,9 +2,9 @@
 
 # Setup
 
-Install [Metamask](https://metamask.io/) in Chrome, Firefox, or download the Brave browser and then enable the extension.
+Install [Metamask](https://metamask.io/) in Chrome, Firefox, or download the [Brave browser](https://brave.com/) and then enable the extension.
 
-Back up your seed (copy it somewhere safe) and request test ether for the Ropsten network. Good, quick instructions [here](https://blog.bankex.org/how-to-buy-ethereum-using-metamask-ccea0703daec) for how to do this. 
+Back up your seed (copy it somewhere safe) and request test ether for the Ropsten network. Good, quick [instructions here](https://blog.bankex.org/how-to-buy-ethereum-using-metamask-ccea0703daec) for how to do this. 
 
 # Join the Association
 
@@ -14,7 +14,7 @@ The token created by contract [TokenERC20.sol](https://ropsten.etherscan.io/addr
 
 2. Using Metamask, send a small amount of Ropsten test ether to `0x5632aB6622614bc3eB4AeA5e04f431784d9E4D60` and I will send you an amount of tokens based on the governance model specified below. This method preserves your privacy. You are also free to then login to Github and join the conversation.
 
-To know whether you have received your tokens, open Metamask, click the menu bar (top left), then click 'Add Token' at the bottom. Choose 'Custom Token' and paste in the Token address shown on the dApp webpage. The symbol is XFF and the decimal is 1. When you open the menu again, you should see your current balance.
+To know whether you have received your tokens, open Metamask, click the menu bar (top left), then click 'Add Token' at the bottom. Choose 'Custom Token' and paste in the Token address shown on the dApp webpage. The symbol is XFF and the decimal is 1. When you open the menu again, you should see your current balance. The dApp also displays your token balance.
 
 # Governance Model and Token Distribution
 
