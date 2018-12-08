@@ -19,7 +19,7 @@ To know whether you have received your tokens, open Metamask, click the menu bar
 # Governance Model and Token Distribution
 
 Some of the key details that determine the governance model are:
-* the total of minutes required for debate of a proposal
+* the total minutes required for debate of a proposal
 * the quorum, or the amount of votes required for a proposal to pass (or fail)
 * the token address and its distribution that enables stakeholders to have agency within the association
 
@@ -29,7 +29,11 @@ For the first few days after launch, however, the minutes for debate will be set
 
 # Using the dApp
 
-**Make sure you are logged in to Metamask, using the Ropsten network and that you have test ether.**
+**Checklist - Ensure that you are** 
+* logged in to Metamask
+* using the Ropsten network
+* have test ether
+* have a token balance greater than 0
 
 `Approve` the Association contract to receive your tokens. Enter an amount that does not exceed the number of tokens you have and copy/paste the address of the Association contract. Click send token. Once the transaction completes, scroll to the bottom of the page. Since you've made a transaction that has changed the state of the smart contract (for which you paid a small fee to do), there is a transaction hash you can track on the blockchain. Click the link to open a block explorer and see all related information for that transaction. Each time you change state, a new link will be available at the bottom of the page.
 
