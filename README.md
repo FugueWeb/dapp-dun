@@ -2,7 +2,7 @@
 
 # Setup
 
-Install [Metamask](https://metamask.io/) in Chrome, Firefox, or download the [Brave browser](https://brave.com/) and then enable the extension.
+Install [Metamask](https://metamask.io/) in Chrome, Firefox, or download the [Brave browser](https://brave.com/) and then enable the extension. You must use a computer or laptop (no mobile configuration yet).
 
 Back up your seed (copy it somewhere safe) and request test ether for the Ropsten network. Good, quick [instructions here](https://blog.bankex.org/how-to-buy-ethereum-using-metamask-ccea0703daec) for how to do this. 
 
