@@ -1,0 +1,9 @@
+<div *ngIf="txs.length">
+    <mat-card *ngFor='let tx of txs; index as i;'>
+        <mat-card-header>Transactions</mat-card-header>
+        <!-- <mat-card-subtitle>Dog Breed</mat-card-subtitle> -->
+        <mat-card-content>
+            <p>{{tx}} | <a href="https://ropsten.etherscan.io/tx/{{tx}}" target="_blank">View on Etherscan</a></p>
+        </mat-card-content>
+    </mat-card>
+</div>

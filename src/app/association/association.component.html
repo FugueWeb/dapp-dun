@@ -1,0 +1,172 @@
+<div class="row">
+  <div class="col-6">
+      <p>Association Address: <a href="https://ropsten.etherscan.io/address/{{contract.address}}" target="_blank">{{contract.address}}</a></p>
+      <p>Token Address: <a href="https://ropsten.etherscan.io/address/{{contract.sharesAddress}}" target="_blank">{{contract.sharesAddress}}</a></p>
+      <p>Quorum: {{contract.quorum}}</p>
+      <p>Minutes for Debate: {{contract.minMinutes}}</p> 
+      <p>Number of Proposals: {{contract.numProposals}}</p>
+  </div>
+  <div class="col-6">
+    <mat-card>
+        <mat-card-header>Convert ETH to Wei</mat-card-header>
+        <mat-card-content>
+          <mat-form-field>
+            <input type="text" matInput #conversion placeholder="Amount">
+          </mat-form-field>
+          <button mat-button (click)="getWeiFromETH(conversion.value)">Convert</button>
+          {{convert.wei}}
+        </mat-card-content>
+      </mat-card>    
+  </div>
+</div>
+
+<form [formGroup]="receiveApprovalForm">
+  <mat-card>
+    <mat-card-header>Receive Approval</mat-card-header>
+    <mat-card-content>
+      <mat-form-field>
+        <input matInput placeholder="From address" formControlName="addr">
+        <mat-error *ngIf="receiveApprovalForm.invalid">{{receiveApprovalErrorMsg('addr')}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Amount" (change)="setAmount($event)" 
+        formControlName="amount">
+        <mat-error *ngIf="receiveApprovalForm.invalid">{{receiveApprovalErrorMsg('amount')}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input placeholder="Token address" matInput formControlName="token">
+        <mat-error *ngIf="receiveApprovalForm.invalid">{{receiveApprovalErrorMsg('token')}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Data" (change)="setData($event)" formControlName="data">
+        <mat-error *ngIf="receiveApprovalForm.invalid">{{receiveApprovalErrorMsg('data')}}</mat-error>
+      </mat-form-field>    
+      <button mat-button  color="primary" (click)="receiveApproval()" 
+      [disabled]="!receiveApprovalForm.valid">Receive Approval</button>
+    </mat-card-content>
+  </mat-card>
+</form>
+
+<form [formGroup]="newProposalForm">
+  <mat-card >
+    <mat-card-header>New Proposal</mat-card-header>
+    <mat-card-content>
+      <mat-form-field>
+        <input matInput id="amount" placeholder="Amount (in wei)" 
+        (change)="setAmount($event)" formControlName="amount">
+        <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('amount')}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput id="beneficiary" placeholder="Beneficiary Address" 
+        (change)="setBeneficiary($event)" formControlName="addr">
+        <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('addr')}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput id="justification" placeholder="Description" 
+        (change)="setJustification($event)" formControlName="desc">
+        <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('desc')}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput id="data" placeholder="Data" (change)="setData($event)" formControlName="data">
+        <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('data')}}</mat-error>
+      </mat-form-field>
+      <button mat-button id="newProposalInEther" (click)="newProposal()"
+      [disabled]="!newProposalForm.valid">Make Proposal</button>
+    </mat-card-content>
+  </mat-card>
+</form>
+
+<mat-card>
+  <mat-card-header>Get Proposal Details</mat-card-header>
+  <mat-card-content>
+    <mat-form-field>
+      <input type="number" matInput #proposalNum placeholder="Proposal number">
+    </mat-form-field>
+    <button mat-button id="getProposalButton" (click)="getProposal(proposalNum.value)">Go</button>
+    <p *ngIf="model.proposal.length">Beneficiary: {{model.proposal[0]}} | Amount: {{model.proposal[1]}} wei | Description: {{model.proposal[2]}} | Min Execution Date: {{model.proposal[3]}} | Executed: {{model.proposal[4]}} | Proposal passed: {{model.proposal[5]}} | Number of votes: {{model.proposal[6]}} | Proposal hash: {{model.proposal[7]}}</p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card [formGroup]="checkProposalForm">
+  <mat-card-header>Check Proposal Code</mat-card-header>
+  <mat-card-content>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Proposal Number" 
+      (change)="setProposalNumber($event)" formControlName="number">
+      <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('number')}}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Beneficiary Address" 
+      (change)="setBeneficiary($event)" formControlName="addr">
+      <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('addr')}}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Amount (in wei)" 
+      (change)="setAmount($event)" formControlName="amount">
+      <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('amount')}}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Data" 
+      (change)="setData($event)" formControlName="data">
+      <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('data')}}</mat-error>
+    </mat-form-field>
+    <button mat-button (click)="checkProposalCode()"
+    [disabled]="!checkProposalForm.valid">Check Code</button>
+    {{model.checkProp}}
+  </mat-card-content>
+</mat-card>
+
+<mat-card [formGroup]="voteForm">
+  <mat-card-header>Vote</mat-card-header>
+  <mat-card-content>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Proposal Number" 
+      (change)="setProposalNumber($event)" formControlName="number">
+      <mat-error *ngIf="voteForm.invalid">{{voteErrorMsg('number')}}</mat-error>
+    </mat-form-field>
+    <mat-select name="vote" class="small-mat-select" [(value)]="model.vote" 
+    placeholder="Cast Vote" formControlName="bool">
+      <mat-option value="true">True</mat-option>
+      <mat-option value="false">False</mat-option>
+    </mat-select>
+    <button mat-button (click)="vote()" [disabled]="!voteForm.valid">Vote</button>
+  </mat-card-content>
+</mat-card>
+
+<mat-card [formGroup]="executeProposalForm">
+  <mat-card-header>Execute Proposal</mat-card-header>
+  <mat-card-content>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Proposal Number" 
+      (change)="setProposalNumber($event)" formControlName="number">
+      <mat-error *ngIf="executeProposalForm.invalid">{{executeProposalErrorMsg('number')}}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Data" 
+      (change)="setData($event)" formControlName="data">
+      <mat-error *ngIf="executeProposalForm.invalid">{{executeProposalErrorMsg('data')}}</mat-error>
+    </mat-form-field>
+    <button mat-button (click)="executeProposal()" [disabled]="!executeProposalForm.valid">Execute</button>
+  </mat-card-content>
+</mat-card>
+
+<form [formGroup]="changeVotingForm">
+  <mat-card>
+    <mat-card-header>Change Voting Rules</mat-card-header>
+    <mat-card-subtitle><em>Only contract owner can call</em></mat-card-subtitle>
+    <mat-card-content>
+      <mat-form-field>
+        <input matInput placeholder="Token address" (change)="setTokenAddr($event)" formControlName="token">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Minimum Quorum" (change)="setQuorum($event)" 
+        formControlName="quorum">
+      </mat-form-field>
+      <mat-form-field>
+        <input placeholder="Minutes for Debate" matInput (change)="setDebatePeriod($event)" formControlName="minMinutes">
+      </mat-form-field> 
+      <button mat-button  color="primary" (click)="changeVotingRules()" 
+      [disabled]="!changeVotingForm.valid">Change</button>
+    </mat-card-content>
+  </mat-card>
+</form>
