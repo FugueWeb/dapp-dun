@@ -8,11 +8,11 @@ Back up your seed (copy it somewhere safe) and request test ether for the Ropste
 
 # Join the Association
 
-The token created by contract [TokenERC20.sol](xxx) is what affords membership to the Association. Moreover, the amount of tokens you have determines the weight of your vote toward a given proposal. There are two options for you to get these stakeholder tokens.
+The token created by contract [TokenERC20.sol](https://ropsten.etherscan.io/address/0x732f6aa748ef46ab034dfba9e9a0a746c682891e) is what affords membership to the Association. Moreover, the amount of tokens you have determines the weight of your vote toward a given proposal. There are two options for you to get these stakeholder tokens.
 
-1. For those who want an interactive experience, to propose new governance models, get help with troubleshooting, and assist with posing/answering questions to help build this project, login to Github (go here to [create an account](https://github.com/join)) and post your Metamask account address [in this Issue](xxx) within this repository. I will send you an amount of tokens based on the governance model specified below.
+1. For those who want an interactive experience, to propose new governance models, get help with troubleshooting, and assist with posing/answering questions to help build this project, login to Github (go here to [create an account](https://github.com/join)) and post your Metamask account address [in this Issue](https://github.com/fuguefoundation/dapp-association/issues/1) within this repository. I will send you an amount of tokens based on the governance model specified below.
 
-2. Using Metamask, send a small amount of Ropsten test ether to XXX and I will send you an amount of tokens based on the governance model specified below. This method preserves your privacy. You are also free to then login to Github and join the conversation.
+2. Using Metamask, send a small amount of Ropsten test ether to `0x5632aB6622614bc3eB4AeA5e04f431784d9E4D60` and I will send you an amount of tokens based on the governance model specified below. This method preserves your privacy. You are also free to then login to Github and join the conversation.
 
 To know whether you have received your tokens, open Metamask, click the menu bar (top left), then click 'Add Token' at the bottom. Choose 'Custom Token' and paste in the Token address shown on the dApp webpage. The symbol is XFF and the decimal is 1. When you open the menu again, you should see your current balance.
 
