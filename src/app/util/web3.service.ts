@@ -9,7 +9,7 @@ declare let window: any;
 
 @Injectable()
 export class Web3Service {
-  private web3: any;
+  public web3: any;
   private accounts: string[];
   public ready = false;
   public MetaCoin: any;
@@ -34,8 +34,8 @@ export class Web3Service {
       Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
       // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
       // 8545 for Metamask, 7545 for Ganache
-      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-      // this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
+      // this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     }
     this.checkNetwork();
     setInterval(() => this.refreshAccounts(), 5000);

@@ -3,7 +3,7 @@ import {Validators, FormGroup, FormBuilder} from '@angular/forms';
 import {Web3Service} from '../util/web3.service';
 import {TxService} from '../util/transaction.service';
 import { MatSnackBar } from '@angular/material';
-
+// import { setTimeout } from 'timers';
 declare let require: any;
 const association_artifacts = require('../../../build/contracts/Association.json');
 
@@ -61,7 +61,6 @@ export class AssociationComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('OnInit: ' + this.web3Service);
-    console.log(this);
     this.watchAccount();
     this.web3Service.artifactsToContract(association_artifacts)
       .then((AssociationAbstraction) => {
@@ -90,7 +89,7 @@ export class AssociationComponent implements OnInit {
     this.newProposalForm = this.fb.group({
       addr: ['', [Validators.required, Validators.minLength(42), Validators.maxLength(42)]],
       amount: ['', Validators.required],
-      desc: ['', Validators.required],
+      desc: ['', [Validators.required, Validators.maxLength(42)]],
       data: ['', Validators.required]
     });
     this.checkProposalForm = this.fb.group({
