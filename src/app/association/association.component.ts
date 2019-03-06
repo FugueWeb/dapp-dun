@@ -38,7 +38,16 @@ export class AssociationComponent implements OnInit {
     data: '',
     account: '',
     balance: 0,
-    proposal: [],
+    proposal: {
+        amount: 0,
+        desc: '',
+        executed: false,
+        minExecutionDate: 0,
+        numberOfVotes: 0,
+        proposalHash: 0,
+        proposalPassed: false,
+        beneficiary: ''
+    },
     proposalNum: 0,
     vote: false,
     checkProp: '',
@@ -249,9 +258,17 @@ export class AssociationComponent implements OnInit {
 
     try {
       const deployedAssociation = await this.Association.deployed();
-      console.log(deployedAssociation);
-      const tempString = await deployedAssociation.proposals.call(pNumber, {from: this.model.account});
-      this.model.proposal = String(tempString).split(',');
+      const result = await deployedAssociation.proposals.call(pNumber, {from: this.model.account});;
+      console.log(result);
+      this.model.proposal.amount = result.amount;
+      this.model.proposal.desc = result.description;
+      this.model.proposal.beneficiary = result.recipient;
+      this.model.proposal.executed = result.executed;
+      this.model.proposal.minExecutionDate = result.minExecutionDate;
+      this.model.proposal.numberOfVotes = result.numberOfVotes;
+      this.model.proposal.proposalHash = result.proposalHash;
+      this.model.proposal.proposalPassed = result.proposalPassed;
+      //this.model.proposal = String(result).split(',');
       console.log('Found proposal: ' + this.model.proposal[0]);
     } catch (e) {
       console.log(e);

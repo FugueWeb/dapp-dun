@@ -35,7 +35,6 @@ export class TokenERC20Component implements OnInit {
 
   ngOnInit(): void {
     console.log('OnInit: ' + this.web3Service);
-    console.log(this);
     this.watchAccount();
     this.web3Service.artifactsToContract(token_artifacts)
       .then((TokenAbstraction) => {

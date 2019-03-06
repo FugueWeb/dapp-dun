@@ -83,7 +83,7 @@
       <input type="number" matInput #proposalNum placeholder="Proposal number">
     </mat-form-field>
     <button mat-button id="getProposalButton" (click)="getProposal(proposalNum.value)">Go</button>
-    <p *ngIf="model.proposal.length">Beneficiary: {{model.proposal[0]}} | Amount: {{model.proposal[1]}} wei | Description: {{model.proposal[2]}} | Min Execution Date: {{model.proposal[3]}} | Executed: {{model.proposal[4]}} | Proposal passed: {{model.proposal[5]}} | Number of votes: {{model.proposal[6]}} | Proposal hash: {{model.proposal[7]}}</p>
+    <p *ngIf="model.proposal.beneficiary">Beneficiary: {{model.proposal.beneficiary}} | Amount: {{model.proposal.amount}} wei | Description: {{model.proposal.desc}} | Min Execution Date: {{model.proposal.minExecutionDate}} | Executed: {{model.proposal.executed}} | Proposal passed: {{model.proposal.proposalPassed}} | Number of votes: {{model.proposal.numberOfVotes}} | Proposal hash: {{model.proposal.proposalHash}}</p>
   </mat-card-content>
 </mat-card>
 
