@@ -1,0 +1,98 @@
+[
+    {
+        "id": "balance",
+        "desc": "The token balance of the user's current address, as determined by Metamask. To change to another address, open Metamask, click the avatar in the top right corner, and choose the address. Alternatively, you can create or import another address in Metamask by selecting those options."
+    },
+    {
+        "id": "tokenBalance",
+        "desc": "The token balance of a given address"
+    },
+    {
+        "id": "sendToken",
+        "desc": "Send tokens from your balance to another address. You can send your tokens to a different address you control, or you can give your token to a trusted address, thus delegating more authority to that address. Note, the DUN token is the native token of the Decentralized UN and should not be confused with ether (ETH), the cryptocurrency of the Ethereum platform."
+    },
+    {
+        "id": "approve",
+        "desc": "Approve an address (such as the Decentralized UN) to manage (i.e., receive, send, burn) tokens on your behalf."
+    },
+    {
+        "id": "mint",
+        "desc": "Create more DUN tokens as part of the Decentralized UN's monetary policy. Input the amount of tokens to mint, the recipient (i.e., the Decentralized UN), then get the data and include it in a proposal."
+    },
+    {
+        "id": "setBuySellPrice",
+        "desc": "Set the market price (in wei, the smallest domination of ETH) for the DUN token. The token contract should be funded with sufficient ETH in order for the marketplace to work properly. Once the buy/sell prices are set, call `allowBuySell`, which will effectively open the market for business."
+    },
+    {
+        "id": "allowBuySell",
+        "desc": "Toggle permission to allow/deny other users on the network to buy or sell DUN tokens."
+    },
+    {
+        "id": "burnFrom",
+        "desc": "Burn DUN tokens from a given address. The caller of this function (i.e., the Decentralized UN) needs to have been approved by the burn address for the set amount of tokens."
+    },
+    {
+        "id": "sellTokens",
+        "desc": "Sell a given amount of DUN tokens to the contract. The token contract needs to have a sufficient balance of ETH for this to work."
+    },
+    {
+        "id": "transferOwnershipToken",
+        "desc": "Transfer ownership of the token contract. This will likely only be called once during initialization, where the address that created the contract will transfer ownership of the contract to the Decentralized UN in order to decentralize the power structure."
+    },  
+    {
+        "id": "buyTokens",
+        "desc": "Buy DUN tokens from the contract. The amount of tokens you will receive is proportionate to the amount of ether you send to the contract (i.e., amount of ETH in wei / price of DUN token)."
+    },    
+    {
+        "id": "convertETHtoWei",
+        "desc": "A helper function to convert ETH to its smallest denomination, wei. 1 ETH in wei is a one followed by eighteen zeros."
+    },
+    {
+        "id": "receiveApproval",
+        "desc": "Decentralized UN receives approval from a given address once that address has called `approve` in the token contract. This will result in (up to) the approved amount of DUN tokens transferring from specified address to the Decentralized UN."
+    },
+    {
+        "id": "newProposal",
+        "desc": "Create new proposal. Only valid members of the Decentralized UN can call this function, meaning an unsanctioned address that has a balance of at least DUN token that has been `approved` by the Decentralized UN. There are many types of proposals that can be made, the most powerful of which making use of the `data` parameter, which allows code to execute on a smart contract if the proposal passes. If the proposal does not make use of the `data` parameter, enter 0x."
+    },
+    {
+        "id": "getProposalDetails",
+        "desc": "Check the details of a given proposal. The details will reflect both the parameters of the proposal when it was first made, as well as the quorum and minimum minutes for debate. The number is zero-indexed, thus the first proposal made will have a proposal number of 0."
+    },
+    {
+        "id": "checkProposalCode",
+        "desc": "Allows users to verify cryptographically that the proposal is as it claims to be by comparing the values entered against the proposal hash stored on the blockchain. If the proposal does not make use of the `data` parameter, enter 0x."
+    },
+    {
+        "id": "vote",
+        "desc": "Vote for or against a given proposal. Note, the weight of an addresses vote, which counts towards meeting the required quorum, is based on the number of tokens in its balance at the time proposal is executed. Only valid members of the Decentralized UN can call this function, meaning an unsanctioned address that has a balance of at least DUN token that has been `approved` by the Decentralized UN."
+    },
+    {
+        "id": "executeProposal",
+        "desc": "Execute a given proposal. This function can be called by any address, however it will only execute if the quorum and minimum minutes for debate have been met, and the correct `data` (if applicable for the proposal) was passed in. If the proposal does not make use of the `data` parameter, enter 0x."
+    },
+    {
+        "id": "changeVotingRules",
+        "desc": "Change the required quorum, minimum minutes for debate, and the token address governing the Decentralized UN."
+    },
+    {
+        "id": "transferOwnershipDUN",
+        "desc": "Transfer ownership of the Decentralized UN. This will likely only be called once during initialization, where the address that created the contract will transfer ownership of the contract to the Decentralized UN itself in order to decentralize the power structure and allow certain functions to be called through consensus."
+    },
+    {
+        "id": "dissolveDUN",
+        "desc": "`selfDestruct` the contract. This will render all functionality of the contract useless and send any ETH in the contract to the DUN Token Contract."
+    },
+    {
+        "id": "sanctionMember",
+        "desc": "Impose or remove sanction on an address. When an address is sanctioned, the user can not vote or make proposals, nor can they transfer/buy/sell their tokens. They do retain ownership of the tokens currently in their balance (see `burnFrom` and `receiveApproval` for more options regarding sanctioned address' balance)."
+    },
+    {
+        "id": "isMemberSanctioned",
+        "desc": "Check to see current state of an address. Returns true if address is sanctioned."
+    },
+    {
+        "id": "quorum",
+        "desc": "Quorum: The minimum amount of votes, as determined by the balance of the voting addresses, required for a proposal to be executable. \n\n Minutes for Debate: The UNIX timestamp for when a proposal is executable. You can convert the timestamp to a date at https://www.unixtimestamp.com/. \n\n Number of Proposals: The total number of proposals. Note, the number is zero indexed, meaning that if you search for the details on the seventh proposal using the `getProposalDetails` function, you should enter the number 6."
+    }
+]
