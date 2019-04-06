@@ -18,24 +18,28 @@ contract owned {
     }
 }
 
-contract tokenRecipient {
+contract tokenRecipient is owned {
     event receivedEther(address sender, uint amount);
     event receivedTokens(address _from, uint256 _value, address _token, bytes _extraData);
 
-    function receiveApproval(address _from, uint256 _value, address _token, bytes memory _extraData) public {
+    function receiveApproval(address _from, uint256 _value, address payable _token, bytes memory _extraData) onlyOwner public {
         Token t = Token(_token);
         require(t.transferFrom(_from, address(this), _value));
         emit receivedTokens(_from, _value, _token, _extraData);
     }
 
-    function () payable external {
+    function () external payable {
         emit receivedEther(msg.sender, msg.value);
     }
 }
 
 contract Token {
     mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
+    function burn(uint256 _value) public returns (bool success);
+    mapping (address => bool) public frozenAccount;
+    function() external payable { }
 }
 
 /**
@@ -74,7 +78,9 @@ contract Association is owned, tokenRecipient {
 
     // Modifier that allows only shareholders to vote and create new proposals
     modifier onlyShareholders {
-        require(sharesTokenAddress.balanceOf(msg.sender) > 0);
+        require(sharesTokenAddress.balanceOf(msg.sender) > 0, "no balance");
+        require(!sharesTokenAddress.frozenAccount(msg.sender), "account frozen");
+        require(sharesTokenAddress.allowance(msg.sender, address(this)) >= 1, "allowance is not ge 1");
         _;
     }
 
@@ -260,5 +266,9 @@ contract Association is owned, tokenRecipient {
 
         // Fire Events
         emit ProposalTallied(proposalNumber, yea - nay, quorum, p.proposalPassed);
+    }
+
+    function dissolve() public onlyOwner {
+        selfdestruct(address(sharesTokenAddress));
     }
 }
