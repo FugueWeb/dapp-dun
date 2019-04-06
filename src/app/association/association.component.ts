@@ -3,9 +3,12 @@ import {Validators, FormGroup, FormBuilder} from '@angular/forms';
 import {Web3Service} from '../util/web3.service';
 import {TxService} from '../util/transaction.service';
 import { MatSnackBar } from '@angular/material';
-// import { setTimeout } from 'timers';
+import {MatDialog} from '@angular/material';
+import { DialogComponent } from '../util/dialog.component';
+
 declare let require: any;
 const association_artifacts = require('../../../build/contracts/Association.json');
+const dialog_data = require('./info.json');
 
 @Component({
   selector: 'app-association',
@@ -22,6 +25,7 @@ export class AssociationComponent implements OnInit {
   checkProposalForm: FormGroup;
   executeProposalForm: FormGroup;
   changeVotingForm: FormGroup;
+  transferOwnershipForm: FormGroup;
 
   contract = {
     address: '',
@@ -53,7 +57,8 @@ export class AssociationComponent implements OnInit {
     checkProp: '',
     tokenAddr: '',
     quorum: '',
-    minMinutes: ''
+    minMinutes: '',
+    newOwner: ''
   };
 
   convert = {
@@ -64,7 +69,7 @@ export class AssociationComponent implements OnInit {
   status = '';
 
   constructor(private web3Service: Web3Service, private matSnackBar: MatSnackBar,
-    private txService: TxService, private fb: FormBuilder) {
+    private txService: TxService, private fb: FormBuilder, private dialog: MatDialog) {
     console.log('Constructor: ' + web3Service);
   }
 
@@ -119,6 +124,23 @@ export class AssociationComponent implements OnInit {
       token: ['', [Validators.required, Validators.minLength(42), Validators.maxLength(42)]],
       minMinutes: ['', Validators.required],
       quorum: ['', Validators.required]
+    });
+    this.transferOwnershipForm = this.fb.group({
+      addr: ['', [Validators.required, Validators.minLength(42), Validators.maxLength(42)]],
+    });
+  }
+
+  openDialog(index): void {
+      let choice;
+      for (let i = 0; i < dialog_data.length; i++) {
+        if(dialog_data[i].id === index) {
+            choice = dialog_data[i];
+        }
+      }
+      
+    this.dialog.open(DialogComponent, {
+      width: '400px',
+      data: {id: choice.id, desc: choice.desc}
     });
   }
 
@@ -222,6 +244,11 @@ export class AssociationComponent implements OnInit {
     this.model.minMinutes = e.target.value;
   }
 
+  setTransferOwnership(e) {
+    console.log('Transfer Owner: ' + e.target.value);
+    this.model.newOwner = e.target.value;
+  }
+  
   async newProposal() {
     if (!this.Association) {
       this.setStatus('Association is not loaded, unable to send transaction');
@@ -269,7 +296,6 @@ export class AssociationComponent implements OnInit {
       this.model.proposal.proposalHash = result.proposalHash;
       this.model.proposal.proposalPassed = result.proposalPassed;
       //this.model.proposal = String(result).split(',');
-      console.log('Found proposal: ' + this.model.proposal[0]);
     } catch (e) {
       console.log(e);
       this.setStatus('Error checking proposal; see log.');
@@ -289,17 +315,17 @@ export class AssociationComponent implements OnInit {
 
     console.log('Check proposal ' + proposalNum + ' to send ' + amount + ' to ' + beneficiary + '. Data: ' + data);
 
-    this.setStatus('Initiating transaction... (please wait)');
+    this.setStatus('Checking Proposal... (please wait)');
     try {
       const deployedAssociation = await this.Association.deployed();
       const transaction = await deployedAssociation.checkProposalCode.call(proposalNum, beneficiary, amount, data, {from: this.model.account});
 
       if (!transaction) {
         this.model.checkProp = transaction;
-        this.setStatus('Transaction failed!');
+        this.setStatus('Check Proposal failed!');
       } else {
         this.model.checkProp = transaction;
-        this.setStatus('Transaction complete!');
+        this.setStatus('Check Proposal complete!');
       }
     } catch (e) {
       console.log(e);
@@ -392,6 +418,33 @@ export class AssociationComponent implements OnInit {
     }
   }
 
+  async transferOwnership() {
+    if (!this.Association) {
+      this.setStatus('Association is not loaded, unable to send transaction');
+      return;
+    }
+
+    const newOwner = this.model.newOwner;
+
+    console.log('Transfer ownership of Association to ' + newOwner);
+
+    this.setStatus('Initiating transaction... (please wait)');
+    try {
+      const deployedAssociation = await this.Association.deployed();
+      const transaction = await deployedAssociation.transferOwnership.sendTransaction(newOwner, {from: this.model.account});
+
+      if (!transaction) {
+        this.setStatus('Transaction failed!');
+      } else {
+        this.setStatus('Transaction complete!');
+        this.updateTx(transaction);
+      }
+    } catch (e) {
+      console.log(e);
+      this.setStatus('Error making proposal; see log.');
+    }
+  }
+
   async changeVotingRules() {
     if (!this.Association) {
       this.setStatus('Association is not loaded, unable to send transaction');
@@ -422,6 +475,31 @@ export class AssociationComponent implements OnInit {
       console.log(e);
       this.model.checkProp = 'error, see log';
       this.setStatus('Error making proposal; see log.');
+    }
+  }
+
+  async dissolve() {
+    if (!this.Association) {
+      this.setStatus('Association is not loaded, unable to send transaction');
+      return;
+    }
+
+    console.log('Self destruct contract');
+
+    this.setStatus('Initiating transaction... (please wait)');
+    try {
+      const deployedAssociation = await this.Association.deployed();
+      const transaction = await deployedAssociation.dissolve.sendTransaction({from: this.model.account});
+
+      if (!transaction) {
+        this.setStatus('Transaction failed!');
+      } else {
+        this.setStatus('Transaction complete!');
+        this.updateTx(transaction);
+      }
+    } catch (e) {
+      console.log(e);
+      this.setStatus('Error with self destruct; see log.');
     }
   }
 }

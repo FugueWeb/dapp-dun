@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
+import { MatSnackBar } from '@angular/material';
 import * as contract from 'truffle-contract';
 import {Subject} from 'rxjs';
+declare let window: any;
 declare let require: any;
 const Web3 = require('web3');
-
-
-declare let window: any;
 
 @Injectable()
 export class Web3Service {
@@ -15,10 +14,14 @@ export class Web3Service {
   public MetaCoin: any;
   public accountsObservable = new Subject<string[]>();
 
-  constructor() {
+  constructor(private matSnackBar: MatSnackBar) {
     window.addEventListener('load', (event) => {
       this.bootstrapWeb3();
     });
+  }
+
+  setStatus(status) {
+    this.matSnackBar.open(status, null, {duration: 4000});
   }
 
   public bootstrapWeb3() {
@@ -34,11 +37,11 @@ export class Web3Service {
       Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
       // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
       // 8545 for Metamask, 7545 for Ganache
-      // this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
+      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      //this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     }
     this.checkNetwork();
-    setInterval(() => this.refreshAccounts(), 5000);
+    setInterval(() => this.refreshAccounts(), 10000);
   }
 
   public async artifactsToContract(artifacts) {
@@ -55,26 +58,28 @@ export class Web3Service {
   }
 
   async checkNetwork() {
-    const netID = await this.web3.eth.net.getNetworkType((err, network) => {
+    let netID;
+    await this.web3.eth.net.getNetworkType((err, network) => {
+        netID = network;
     });
     switch (netID) {
-      case '1':
-        console.log('You are using MainNet. Please connect to Ropsten.');
+      case 'main':
+        this.setStatus('You are using MainNet. Please connect to Ropsten.');
         break;
-      case '2':
-        console.log('You are using Morden. Please connect to Ropsten.');
+      case 'morden':
+        this.setStatus('You are using Morden. Please connect to Ropsten.');
         break;
-      case '3':
-        console.log('You are using Ropsten, excellent!');
+      case 'ropsten':
+        this.setStatus('You are using Ropsten, excellent!');
         break;
-      case '4':
-        console.log('You are using Rinkeby. Please connect to Ropsten.');
+      case 'rinkeby':
+        this.setStatus('You are using Rinkeby. Please connect to Ropsten.');
         break;
       case 'private':
-        console.log('Using private test net');
+        this.setStatus('Using private test net');
         break;
       default:
-        console.log('Unknown network. Please connect to Ropsten in Metamask.');
+        this.setStatus('Unknown network. Please connect to Ropsten in Metamask.');
         break;
     }
   }
@@ -105,6 +110,14 @@ export class Web3Service {
   }
 
   public convertETHToWei(amount) {
-    return this.web3.utils.toWei(amount, 'ether');
+    return this.web3.utils.toWei(amount.toString(), 'ether');
+  }
+
+  public convertWeitoETH(amount) {
+    return this.web3.utils.fromWei(amount.toString(), 'ether');
+  }
+
+  public getETHBalance(addr) {
+    return this.web3.eth.getBalance(addr);
   }
 }

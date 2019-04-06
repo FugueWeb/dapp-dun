@@ -9,11 +9,8 @@ import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MatButtonModule,
-  MatCardModule,
-  MatFormFieldModule,
-  MatInputModule,
   MatToolbarModule,
-  MatSelectModule
+  MatIconModule
 } from '@angular/material';
 
 @NgModule({
@@ -24,14 +21,11 @@ import {
     BrowserAnimationsModule,
     CommonModule,
     MatButtonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatToolbarModule,
-    MatSelectModule,
+    MatIconModule,
     BrowserModule,
-    FormsModule,
-    HttpClientModule,
+    //FormsModule,
+    //HttpClientModule,
     AssociationTokenModule
   ],
   providers: [],
