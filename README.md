@@ -1,36 +1,32 @@
-### [Click here](https://fuguefoundation.org/association/) for the decentralized application (dApp).
+### [Click here](https://fuguefoundation.org/dun/) for the decentralized application (dApp).
 
 # Setup
 
-Install [Metamask](https://metamask.io/) in Chrome, Firefox, or download the [Brave browser](https://brave.com/) and then enable the extension. You must use a computer or laptop (no mobile configuration yet).
+Install [Metamask](https://metamask.io/) in Chrome, Firefox, or [Brave browser](https://brave.com/) and then enable the extension. You must use a computer or laptop (no mobile configuration yet).
 
 Backup your 12-word seed (copy it somewhere safe) and request test ether for the Ropsten network. Good, quick [instructions here](https://blog.bankex.org/how-to-buy-ethereum-using-metamask-ccea0703daec) for how to do this. 
 
-# Join the Association
+# Join the Decentralized UN
 
-The token created by contract [TokenERC20.sol](https://ropsten.etherscan.io/address/0x732f6aa748ef46ab034dfba9e9a0a746c682891e) is what affords membership to the Association. Moreover, the amount of tokens you have determines the weight of your vote toward a given proposal. There are two options for you to get these stakeholder tokens.
+The token created by contract [AdvancedToken.sol](https://ropsten.etherscan.io/address/0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D) is what affords membership to the Association. Moreover, the amount of tokens you have determines the weight of your vote toward a given proposal. There are two options for you to get these stakeholder tokens.
 
-1. For those who want an interactive experience, to propose new governance models, get help with troubleshooting, and contribute to the knowledgement management of this project, login to Github (go here to [create an account](https://github.com/join)) and post your Metamask account address [in this Issue](https://github.com/fuguefoundation/dapp-association/issues/1) within this repository. I will send you an amount of tokens based on the governance model specified below.
+1. For those who want an interactive experience, to propose new governance models, get help with troubleshooting, and contribute to the knowledgement management of this project, login to Github (go here to [create an account](https://github.com/join)) and post your Metamask account address [in this Issue](https://github.com/fuguefoundation/dapp-association/issues/1) within this repository.
 
-2. Using Metamask, send a small amount of Ropsten test ether (e.g., .001 ETH) to `0x5632aB6622614bc3eB4AeA5e04f431784d9E4D60` and I will send you an amount of tokens based on the governance model specified below. This method preserves your privacy. You are also free to then login to Github and join the conversation.
+2. Using Metamask, send a small amount of Ropsten test ether (e.g., 0.1 ETH) to `0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D` and I will send you one DUN token. This method preserves your privacy. You are always free to then login to Github and join the conversation.
 
-To know whether you have received your tokens, open Metamask, click the menu bar (top left), then click 'Add Token' at the bottom. Choose 'Custom Token' and paste in the Token address shown on the dApp webpage. The symbol is XFF and the decimal is 1. When you open the menu again, you should see your current balance. The dApp also displays your token balance.
+To know whether you have received your tokens, open Metamask, click the menu bar (top left), then click 'Add Token' at the bottom. Choose 'Custom Token' and paste in the Token address shown on the dApp webpage. The symbol is DUN and the decimal is 18. When you open the menu again, you should see your current balance. The dApp also displays your token balance.
 
-# Governance Model and Token Distribution
+# Governance Model and Token Capabilities
 
 Some of the key details that determine the governance model are:
 * the total minutes required for debate of a proposal
 * the quorum, or the amount of votes required for a proposal to pass (or fail)
 * the token address and its distribution that enables stakeholders to have agency within the association
 
-For the first iteration, the amount of tokens distributed to a given address will be determined through random number generation (between 1 and 10 tokens). This is meant to mimic a distribution of wealth/influence/power/etc within a population set. After approximately one week (around December 17, 2018), the quorum will be raised to 50% plus 1 of the total tokens distributed, and the minimum debate time period for a proposal will increase to one day.
-
-For now, however, the minutes of debate will be set at 0 with a quorum of 1. Thus proposals can be made and voted on with no wait time or objection in order to give users a chance to become familiar with the dApp. Please post ideas for new governance models as an issue in this repo.
-
 # Using the dApp
 
 **Checklist - Ensure that you are:** 
-* on the [dApp webpage](https://fuguefoundation.org/association/)
+* on the [dApp webpage](https://fuguefoundation.org/dun)
 * logged in to Metamask
 * using the Ropsten network
 * have test ether
@@ -69,15 +65,6 @@ For now, however, the minutes of debate will be set at 0 with a quorum of 1. Thu
 
 `Change Voting Rules` is special, since only the contract owner of Association can call it. So, for all intents and purposes, there is a benevolent dictatorship at play for purposes of this testing environment, meaning whoever controls that address can unilaterally change key aspects of the governance model. **HOWEVER** there are transparent ways to remove or redistribute this power once the model is established and before any voting/proposal making begins, which can be explored/discussed later.
 
-# Advanced Topics
-
-More to follow. Topics will include:
-
-* What the `data` parameter can do
-* Reading contract events
-* Distributing power away from the contract owner
-* New functionality
-
 # Feedback and Trouble shooting 
 
 This is an open source project. Please post any comments - technical, political, or otherwise - by creating or responding to an issue. That way we can properly track and discuss it. Likewise, if you make new proposals or vote on existing ones, feel free to put comments there too to alert others (though this information is available publicly on the blockchain).
@@ -85,6 +72,8 @@ This is an open source project. Please post any comments - technical, political,
 * Open the developer's console in your browser to see more information. This provides helpful information about errors to assist troubleshooting.
 
 * For each state changing transaction, a pop up window should appear from Metamask. If not, or if you close it (without rejecting the tx), check to see if a little number has appeared on the fox icon in your browser. Click the fox and the transaction should still be waiting for you.
+
+* If the dApp is not reading your address, go into Metamask's settings and under Security & Privacy, turn off Privacy Mode. Now refresh the page. 
 
 # Resources
 
