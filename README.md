@@ -1,4 +1,4 @@
-### [Click here](https://fuguefoundation.org/dun/) for the decentralized application (dApp).
+### [Click here](https://fugueweb.com/dev/dun) for the decentralized application (dApp).
 
 # Setup
 
@@ -10,7 +10,7 @@ Backup your 12-word seed (copy it somewhere safe) and request test ether for the
 
 The token created by contract [AdvancedToken.sol](https://ropsten.etherscan.io/address/0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D) is what affords membership to the Association. Moreover, the amount of tokens you have determines the weight of your vote toward a given proposal. There are two options for you to get these stakeholder tokens.
 
-1. For those who want an interactive experience, to propose new governance models, get help with troubleshooting, and contribute to the knowledgement management of this project, login to Github (go here to [create an account](https://github.com/join)) and post your Metamask account address [in this Issue](https://github.com/fuguefoundation/dapp-association/issues/1) within this repository.
+1. For those who want an interactive experience, to propose new governance models, get help with troubleshooting, and contribute to the knowledgement management of this project, login to Github (go here to [create an account](https://github.com/join)) and post your Metamask account address [in this Issue](https://github.com/fuguefoundation/dapp-dun/issues/1) within this repository.
 
 2. Using Metamask, send a small amount of Ropsten test ether (e.g., 0.1 ETH) to `0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D` and I will send you one DUN token. This method preserves your privacy. You are always free to then login to Github and join the conversation.
 
@@ -21,12 +21,12 @@ To know whether you have received your tokens, open Metamask, click the menu bar
 Some of the key details that determine the governance model are:
 * the total minutes required for debate of a proposal
 * the quorum, or the amount of votes required for a proposal to pass (or fail)
-* the token address and its distribution that enables stakeholders to have agency within the association
+* the token address and its distribution that enables stakeholders to have agency within the Decentralized UN
 
 # Using the dApp
 
 **Checklist - Ensure that you are:** 
-* on the [dApp webpage](https://fuguefoundation.org/dun)
+* on the [dApp webpage](https://fugueweb.com/dev/dun)
 * logged in to Metamask
 * using the Ropsten network
 * have test ether
@@ -78,7 +78,7 @@ This is an open source project. Please post any comments - technical, political,
 # Resources
 
 * Truffle and [Angular Box](https://truffleframework.com/boxes/angular-truffle-box)
-* Angular 6
+* Angular 7
 * Solidity
 * Metamask
 
