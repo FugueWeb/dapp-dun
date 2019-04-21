@@ -92,7 +92,7 @@
         "desc": "Check to see current state of an address. Returns true if address is sanctioned."
     },
     {
-        "id": "quorum",
-        "desc": "Quorum: The minimum amount of votes, as determined by the balance of the voting addresses, required for a proposal to be executable. \n\n Minutes for Debate: The UNIX timestamp for when a proposal is executable. You can convert the timestamp to a date at https://www.unixtimestamp.com/. \n\n Number of Proposals: The total number of proposals. Note, the number is zero indexed, meaning that if you search for the details on the seventh proposal using the `getProposalDetails` function, you should enter the number 6."
+        "id": "quorum-minDebate-numProposal",
+        "desc": "--QUORUM-- The minimum amount of votes, as determined by the balance of the voting addresses, required for a proposal to be executable --MINUTES FOR DEBATE-- The UNIX timestamp for when a proposal is executable. You can convert the timestamp to a date at www.unixtimestamp.com --NUMBER OF PROPOSALS-- The total number of proposals. Note, the number is zero indexed, meaning that if you search for the details on the seventh proposal using the `getProposalDetails` function, you should enter the number 6"
     }
 ]

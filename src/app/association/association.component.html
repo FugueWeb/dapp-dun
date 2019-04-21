@@ -2,6 +2,9 @@
   <div class="col-6">
       <p>DUN Token Address: <a href="https://ropsten.etherscan.io/address/{{contract.sharesAddress}}" target="_blank">{{contract.sharesAddress}}</a></p>
       <p>Decentralized UN Address: <a href="https://ropsten.etherscan.io/address/{{contract.address}}" target="_blank">{{contract.address}}</a></p>
+        <button mat-icon-button (click)="openDialog('quorum-minDebate-numProposal')" style="float:left;">
+            <mat-icon class="iconMargin">info</mat-icon>
+        </button>
       <p>Quorum: {{contract.quorum}} | Minutes for Debate: {{contract.minMinutes}} | Number of Proposals: {{contract.numProposals}}</p>
   </div>
   <div class="col-6">
