@@ -53,7 +53,7 @@ export class AssociationComponent implements OnInit {
         beneficiary: ''
     },
     proposalNum: 0,
-    vote: false,
+    vote: '',
     checkProp: '',
     tokenAddr: '',
     quorum: '',
@@ -298,7 +298,7 @@ export class AssociationComponent implements OnInit {
       //this.model.proposal = String(result).split(',');
     } catch (e) {
       console.log(e);
-      this.setStatus('Error checking proposal; see log.');
+      this.setStatus('Error getting proposal; see log.');
     }
   }
 
@@ -330,7 +330,7 @@ export class AssociationComponent implements OnInit {
     } catch (e) {
       console.log(e);
       this.model.checkProp = 'error, see log';
-      this.setStatus('Error making proposal; see log.');
+      this.setStatus('Error checking proposal code; see log.');
     }
   }
 
@@ -340,15 +340,15 @@ export class AssociationComponent implements OnInit {
       return;
     }
 
-    const vote = this.model.vote;
+    const choice = this.model.vote;
     const proposalNum = this.model.proposalNum;
 
-    console.log('Vote ' + vote + ' for proposal ' + proposalNum);
+    console.log('Vote ' + choice + ' for proposal ' + proposalNum);
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
       const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.vote.sendTransaction(proposalNum, vote, {from: this.model.account});
+      const transaction = await deployedAssociation.vote.sendTransaction(proposalNum, choice, {from: this.model.account});
 
       if (!transaction) {
         this.setStatus('Transaction failed!');
@@ -358,7 +358,7 @@ export class AssociationComponent implements OnInit {
       }
     } catch (e) {
       console.log(e);
-      this.setStatus('Error making proposal; see log.');
+      this.setStatus('Error voting for proposal; see log.');
     }
   }
 
@@ -386,7 +386,7 @@ export class AssociationComponent implements OnInit {
       }
     } catch (e) {
       console.log(e);
-      this.setStatus('Error making proposal; see log.');
+      this.setStatus('Error executing proposal; see log.');
     }
   }
 
@@ -414,7 +414,7 @@ export class AssociationComponent implements OnInit {
       }
     } catch (e) {
       console.log(e);
-      this.setStatus('Error making proposal; see log.');
+      this.setStatus('Error receiving approval; see log.');
     }
   }
 
@@ -441,7 +441,7 @@ export class AssociationComponent implements OnInit {
       }
     } catch (e) {
       console.log(e);
-      this.setStatus('Error making proposal; see log.');
+      this.setStatus('Error transferring ownership; see log.');
     }
   }
 
@@ -474,7 +474,7 @@ export class AssociationComponent implements OnInit {
     } catch (e) {
       console.log(e);
       this.model.checkProp = 'error, see log';
-      this.setStatus('Error making proposal; see log.');
+      this.setStatus('Error changing voting rules; see log.');
     }
   }
 

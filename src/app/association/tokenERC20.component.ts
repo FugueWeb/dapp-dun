@@ -53,7 +53,8 @@ export class TokenERC20Component implements OnInit {
     buySellState: '',
     sanctionAddr: '',
     sanctionState: '',
-    isSanctioned: ''
+    isSanctioned: '',
+    dunTokensBalance: ''
   };
 
   status = '';
@@ -155,6 +156,7 @@ export class TokenERC20Component implements OnInit {
     try {
       const deployedTokenERC20 = await this.TokenERC20.deployed();
       this.model.balance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(this.model.account));
+      this.model.dunTokensBalance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(deployedTokenERC20.address));
       this.model.sellPrice = this.web3Service.convertWeitoETH(await deployedTokenERC20.sellPrice.call());
       this.model.buyPrice = this.web3Service.convertWeitoETH(await deployedTokenERC20.buyPrice.call());
       this.model.buySellState = await deployedTokenERC20.buySellAllowed.call({from: this.model.account});

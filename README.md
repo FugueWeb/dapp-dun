@@ -78,7 +78,7 @@ This is an open source project. Please post any comments - technical, political,
 # Resources
 
 * Truffle and [Angular Box](https://truffleframework.com/boxes/angular-truffle-box)
-* Angular 7
+* Angular 8
 * Solidity
 * Metamask
 

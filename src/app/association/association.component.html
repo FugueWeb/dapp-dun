@@ -254,8 +254,8 @@
                         </mat-form-field>
                         <mat-select name="vote" class="small-mat-select" [(value)]="model.vote" 
                         placeholder="Cast Vote" formControlName="bool">
-                            <mat-option value="true">True - Yes - Agree</mat-option>
-                            <mat-option value="false">False - No - Disagree</mat-option>
+                            <mat-option [value]="true">True - Yes - Agree</mat-option>
+                            <mat-option [value]="false">False - No - Disagree</mat-option>
                         </mat-select>
                         <button mat-raised-button (click)="vote()" [disabled]="!voteForm.valid">Vote</button>
                     </mat-card-content>

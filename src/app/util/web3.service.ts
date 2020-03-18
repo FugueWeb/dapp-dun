@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import * as contract from 'truffle-contract';
+//import * as contract from 'truffle-contract';
+const contract = require('@truffle/contract');
 import {Subject} from 'rxjs';
 declare let window: any;
 declare let require: any;
@@ -66,8 +67,8 @@ export class Web3Service {
       case 'main':
         this.setStatus('You are using MainNet. Please connect to Ropsten.');
         break;
-      case 'morden':
-        this.setStatus('You are using Morden. Please connect to Ropsten.');
+      case 'goerli':
+        this.setStatus('You are using Goerli. Please connect to Ropsten.');
         break;
       case 'ropsten':
         this.setStatus('You are using Ropsten, excellent!');
