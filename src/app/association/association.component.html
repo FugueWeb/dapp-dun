@@ -1,14 +1,14 @@
 <div class="row">
   <div class="col-6">
-      <p>DUN Token Address: <a href="https://ropsten.etherscan.io/address/{{contract.sharesAddress}}" target="_blank">{{contract.sharesAddress}}</a></p>
-      <p>Decentralized UN Address: <a href="https://ropsten.etherscan.io/address/{{contract.address}}" target="_blank">{{contract.address}}</a></p>
+      <p>Token Contract: <a href="https://ropsten.etherscan.io/address/{{contract.sharesAddress}}" target="_blank">{{contract.sharesAddress}}</a></p>
+      <p>Governance Contract: <a href="https://ropsten.etherscan.io/address/{{contract.address}}" target="_blank">{{contract.address}}</a></p>
         <button mat-icon-button (click)="openDialog('quorum-minDebate-numProposal')" style="float:left;">
             <mat-icon class="iconMargin">info</mat-icon>
         </button>
       <p>Quorum: {{contract.quorum}} | Minutes for Debate: {{contract.minMinutes}} | Number of Proposals: {{contract.numProposals}}</p>
   </div>
   <div class="col-6">
-    <mat-card>
+    <mat-card class="readOnly">
         <mat-card-header>
             <button mat-card-avatar mat-icon-button (click)="openDialog('convertETHtoWei')">
                 <mat-icon class="iconMargin">info</mat-icon>
@@ -32,17 +32,17 @@
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
                 <mat-panel-title>
-                    Advanced Decentralized UN Functions
+                    Advanced Governance Functions
                 </mat-panel-title>
                 <mat-panel-description>
-                    Change voting rules, Transfer ownership, Dissolve
+                    Change voting rules, Receive Approval
                 </mat-panel-description>
                 </mat-expansion-panel-header>
 
                 <div class="row">
                     <div class="col-12">
                         <form [formGroup]="changeVotingForm" style="margin-top: 20px;">
-                            <mat-card>
+                            <mat-card class="needConsensus">
                                 <mat-card-header>
                                     <button mat-card-avatar mat-icon-button (click)="openDialog('changeVotingRules')">
                                         <mat-icon class="iconMargin">info</mat-icon>
@@ -71,7 +71,7 @@
                 <div class="row">
                     <div class="col-12">
                         <form [formGroup]="receiveApprovalForm">
-                            <mat-card>
+                            <mat-card class="needConsensus">
                                 <mat-card-header>
                                     <button mat-card-avatar mat-icon-button (click)="openDialog('receiveApproval')">
                                         <mat-icon class="iconMargin">info</mat-icon>
@@ -104,7 +104,7 @@
                         </form>
                     </div>
                 </div><!-- end row -->
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-6">                     
                         <form [formGroup]="transferOwnershipForm">
                             <mat-card>
@@ -139,7 +139,7 @@
                             </mat-card-content>
                         </mat-card>                
                     </div>
-                </div> <!-- end row -->
+                </div> -->
 
             </mat-expansion-panel>
         </mat-accordion>
@@ -149,7 +149,7 @@
     <div class="col-12">
 
         <form [formGroup]="newProposalForm">
-        <mat-card >
+        <mat-card class="canCall">
             <mat-card-header>
                 <button mat-card-avatar mat-icon-button (click)="openDialog('newProposal')">
                     <mat-icon class="iconMargin">info</mat-icon>
@@ -163,7 +163,7 @@
                 <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('amount')}}</mat-error>
             </mat-form-field>
             <mat-form-field>
-                <input matInput id="beneficiary" placeholder="Beneficiary Address" 
+                <input matInput id="beneficiary" placeholder="Recipient Address" 
                 (change)="setBeneficiary($event)" formControlName="addr">
                 <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('addr')}}</mat-error>
             </mat-form-field>
@@ -184,7 +184,7 @@
 
         <div class="row">
             <div class="col-6">
-                <mat-card>
+                <mat-card class="readOnly">
                     <mat-card-header>
                         <button mat-card-avatar mat-icon-button (click)="openDialog('getProposalDetails')">
                             <mat-icon class="iconMargin">info</mat-icon>
@@ -200,11 +200,11 @@
                 </mat-card>
             </div>
             <div class="col-6">
-                <p *ngIf="model.proposal.beneficiary"><strong>Beneficiary:</strong> {{model.proposal.beneficiary}} | <strong>Amount:</strong> {{model.proposal.amount}} wei | <strong>Description:</strong> {{model.proposal.desc}} | <strong>Min Execution Date:</strong> {{model.proposal.minExecutionDate}} | <strong>Executed:</strong> {{model.proposal.executed}} | <strong>Proposal passed:</strong> {{model.proposal.proposalPassed}} | <strong>Number of votes:</strong> {{model.proposal.numberOfVotes}} | <strong>Proposal hash:</strong> {{model.proposal.proposalHash}}</p>
+                <p *ngIf="model.proposal.beneficiary"><strong>Recipient:</strong> {{model.proposal.beneficiary}} | <strong>Amount:</strong> {{model.proposal.amount}} wei | <strong>Description:</strong> {{model.proposal.desc}} | <strong>Min Execution Date:</strong> {{model.proposal.minExecutionDate}} | <strong>Executed:</strong> {{model.proposal.executed}} | <strong>Proposal passed:</strong> {{model.proposal.proposalPassed}} | <strong>Number of votes:</strong> {{model.proposal.numberOfVotes}} | <strong>Proposal hash:</strong> {{model.proposal.proposalHash}}</p>
             </div>
         </div> <!-- end row -->
 
-        <mat-card [formGroup]="checkProposalForm">
+        <mat-card [formGroup]="checkProposalForm" class="readOnly">
             <mat-card-header>
                 <button mat-card-avatar mat-icon-button (click)="openDialog('checkProposalCode')">
                     <mat-icon class="iconMargin">info</mat-icon>
@@ -218,7 +218,7 @@
                 <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('number')}}</mat-error>
                 </mat-form-field>
                 <mat-form-field>
-                <input type="text" matInput placeholder="Beneficiary Address" 
+                <input type="text" matInput placeholder="Recipient Address" 
                 (change)="setBeneficiary($event)" formControlName="addr">
                 <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('addr')}}</mat-error>
                 </mat-form-field>
@@ -239,7 +239,7 @@
         </mat-card>
         <div class="row">
             <div class="col-6">
-                <mat-card [formGroup]="voteForm">
+                <mat-card [formGroup]="voteForm" class="canCall">
                     <mat-card-header>
                         <button mat-card-avatar mat-icon-button (click)="openDialog('vote')">
                             <mat-icon class="iconMargin">info</mat-icon>
@@ -262,7 +262,7 @@
                 </mat-card>
             </div>
             <div class="col-6">
-                <mat-card [formGroup]="executeProposalForm">
+                <mat-card [formGroup]="executeProposalForm" class="canCall">
                     <mat-card-header>
                         <button mat-card-avatar mat-icon-button (click)="openDialog('executeProposal')">
                             <mat-icon class="iconMargin">info</mat-icon>

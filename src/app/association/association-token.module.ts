@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {AssociationComponent} from './association.component';
 import {TokenERC20Component} from './tokenERC20.component';
+import {HelpComponent} from './help.component';
 import {TransactionComponent} from './transaction.component';
 import {DialogComponent} from '../util/dialog.component';
 import {UtilModule} from '../util/util.module';
@@ -37,8 +38,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     RouterModule,
     UtilModule
   ],
-  declarations: [AssociationComponent, TokenERC20Component, TransactionComponent, DialogComponent],
-  exports: [AssociationComponent, TokenERC20Component, TransactionComponent],
+  declarations: [AssociationComponent, TokenERC20Component, HelpComponent, TransactionComponent, DialogComponent],
+  exports: [AssociationComponent, TokenERC20Component, HelpComponent, TransactionComponent],
   entryComponents: [DialogComponent]
 })
 export class AssociationTokenModule {

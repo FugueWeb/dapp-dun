@@ -42,7 +42,7 @@ export class Web3Service {
       //this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     }
     this.checkNetwork();
-    setInterval(() => this.refreshAccounts(), 10000);
+    setInterval(() => this.refreshAccounts(), 5000);
   }
 
   public async artifactsToContract(artifacts) {

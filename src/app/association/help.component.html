@@ -1,0 +1,84 @@
+<div class="row">
+    <div class="col-12">
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Help
+                </mat-panel-title>
+                <mat-panel-description>
+                    How to Use the dApp
+                </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <div class="row">
+                    <table mat-table class="mat-elevation-z8" style="width:100%;">
+                        <ng-container matColumnDef="readCol">
+                          <th mat-header-cell style="background:rgba(63, 81, 181);color:white;"> Read only </th>
+                          <td mat-cell > Reads data from blockchain, no state change </td>
+                        </ng-container>
+                        <ng-container matColumnDef="callCol">
+                          <th mat-header-cell style="background:rgb(152, 156, 173);color:white;"> Members Only </th>
+                          <td mat-cell > DUN members can call these functions directly </td>
+                        </ng-container>
+                        <ng-container matColumnDef="consensusCol">
+                          <th mat-header-cell style="background:rgb(0, 0, 0);color:white;"> Consensus Only </th>
+                          <td mat-cell > Function will fail unless sent as `data` parameter in a proposal </td>
+                        </ng-container>                      
+                      </table>                      
+                </div><!-- end row -->
+
+                <div class="row">
+                    <div class="col-6">
+                        <h3>Glossary</h3>
+                        <p><strong>Blockchain: </strong>a public, decentralized, permission-less ledger distributed across a peer-to-peer network and validated by a consensus algorithm</p>
+                        <p><strong>Decentralized Application (dApp): </strong>an internet-based application that interfaces with a blockchain and is capable of generating valid transactions to make state changes</p>
+                        <p><strong>Smart Contract: </strong>a collection of code and data with a specific purpose or capability that resides at an address on a blockchain</p>
+                        <p><strong>Token: </strong>a programmable asset or access right managed by a smart contract and accessible only by the individual with the private key for the address holding the token</p>
+                        <p><strong>Hash: </strong>a type of digital fingerprint; a hash maps a data input of an arbitrary size through a one-way function into a fixed size string of data, allowing for data integrity and non-repudiation</p>
+                        <p><strong>Decentralized Autonomous Organization (DAO): </strong> an organization represented by rules encoded within a smart contract and controlled by shareholders of a digital asset (token) and not influenced by a central authority</p>
+
+                        <h3>ETH vs. DUN</h3>
+                        <p>ETH or <em>ether</em> is the native token of the Ethereum platform and serves as a sort of universal currency for all Ethereum-based applications. It is also used to pay small transaction fees (called gas) whenever you make state changes on the blockchain.</p>
+                        <p>DUN is a token internal to this specific dApp. It is a membership share within the Decentralized United Nations, and thus the more DUN tokens you have the more authority you have because your vote is that much closer to meeting quorum. DUN can also be traded on the token smart contract, provided that the market is open and there is liquidity.</p>
+                    </div><!-- end col-->                        
+                    <div class="col-6">
+                        <h3>DUN Membership Onboarding</h3>
+                        <ol>
+                            <li>Ensure Metamask is unlocked and on the Ropsten network</li>
+                            <li>Ensure you have whitelisted the fugueweb.com domain<br>
+                                <em>Metamask -> Click avatar (top right) -> Settings -> Connections -> Connect</em>
+                            </li>
+                            <li>Acquire at least 1 DUN token</li>
+                            <li>`approve` the governance contract 1 DUN token</li>
+                            <li>You are now a member, unless through consensus you are sanctioned or your token has been burned</li>
+                        </ol>
+
+                        <h3>Example Proposals</h3>
+                        <p><strong>Basic proposal (no data): </strong>Humanitarian aid package<br>
+                        Note, the amount of ETH must not exceed the balance of ETH held by the governance contract. It is the governance contract, not the sender of the transaction, that will ultimately pay the amount to the recipient if the proposal passes.</p>
+                        <p style="color:rgba(63, 81, 181);">
+                            amount: 100000000000000000   //.1 ETH (in wei)<br>
+                            recipient: 0x1234...ABCD   //the address to receive the funds<br>
+                            description: Aid package to 0x1234<br>
+                            data: 0x   //no data
+                        </p>
+                        <p><strong>Proposal with data: </strong>Burn from an address<br>
+                        When making proposals with the `data` parameter, the `recipient` is always the address of the smart contract where the function will be called. So with `burnFrom` you should include the token contract address.</p>
+                        <p style="color:rgba(63, 81, 181);">
+                            amount: 0   //not sending ETH<br>
+                            recipient: 0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D  //token contract address<br>
+                            description: Burn from 0x7b6b<br>
+                            data: 0x79cc67900000000000000000000000007b6b5c4f5b20e66595bc65493d07c03a5be3f5c2<br>0000000000000000000000000000000000000000000000000000000000000001
+                        </p>
+                    </div><!-- end col-->                  
+                </div><!-- end row -->
+                <div class="row">
+                    <div class="col-12">
+                        <img src="../../assets/dun-workflow.jpg">
+                    </div>
+                </div><!-- end row -->
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+</div><!-- end row -->

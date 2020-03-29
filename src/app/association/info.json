@@ -29,7 +29,7 @@
     },
     {
         "id": "burnFrom",
-        "desc": "Burn DUN tokens from a given address. The caller of this function (i.e., the Decentralized UN) needs to have been approved by the burn address for the set amount of tokens."
+        "desc": "Burn DUN tokens from a given address. The caller of this function (i.e., the governance contract) needs to have been approved by the burnFrom address for the amount of tokens to burn."
     },
     {
         "id": "sellTokens",
@@ -53,7 +53,7 @@
     },
     {
         "id": "newProposal",
-        "desc": "Create new proposal. Only valid members of the Decentralized UN can call this function, meaning an unsanctioned address that has a balance of at least DUN token that has been `approved` by the Decentralized UN. There are many types of proposals that can be made, the most powerful of which making use of the `data` parameter, which allows code to execute on a smart contract if the proposal passes. If the proposal does not make use of the `data` parameter, enter 0x."
+        "desc": "Create new proposal. Only valid members of the Decentralized UN can call this function, meaning an unsanctioned address that has a balance of at least DUN token that has been `approved` by the Decentralized UN. There are many types of proposals that can be made, the most powerful of which making use of the `data` parameter, which allows code to execute on a smart contract if the proposal passes. If using `data`, the `recipient` is the address of the contract where that data will execute. For example, to `sanction` an address you'd put the token contract address as the `recipient`, not the address you wish to sanction (which is already part of the `data` value). If the proposal does not make use of the `data` parameter, enter 0x."
     },
     {
         "id": "getProposalDetails",
@@ -94,5 +94,9 @@
     {
         "id": "quorum-minDebate-numProposal",
         "desc": "--QUORUM-- The minimum amount of votes, as determined by the balance of the voting addresses, required for a proposal to be executable --MINUTES FOR DEBATE-- The UNIX timestamp for when a proposal is executable. You can convert the timestamp to a date at www.unixtimestamp.com --NUMBER OF PROPOSALS-- The total number of proposals. Note, the number is zero indexed, meaning that if you search for the details on the seventh proposal using the `getProposalDetails` function, you should enter the number 6"
+    },
+    {
+        "id": "checkAllowance",
+        "desc": "Confirm the amount of DUN tokens that a given address was approved to manage on behalf of another address. The `allowed` address is most likely the address of the governance contract, since allowing the DUN to manage at least one token is a requirement for membership."
     }
 ]

@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-6">
-    <mat-card>
+    <mat-card class="readOnly">
         <mat-card-header>
             <button mat-card-avatar mat-icon-button (click)="openDialog('balance')">
                 <mat-icon class="iconMargin">info</mat-icon>
@@ -19,7 +19,7 @@
   </div>
   <div class="col-6">
     <form [formGroup]="sendTokenForm">
-      <mat-card>
+      <mat-card class="canCall">
         <mat-card-header>
             <button mat-card-avatar mat-icon-button (click)="openDialog('sendToken')">
                 <mat-icon class="iconMargin">info</mat-icon>
@@ -47,7 +47,7 @@
 
 <div class="row">
   <div class="col-6">
-    <mat-card>
+    <mat-card class="readOnly">
         <mat-card-header>
             <button mat-card-avatar mat-icon-button (click)="openDialog('tokenBalance')">
                 <mat-icon class="iconMargin">info</mat-icon>
@@ -65,7 +65,7 @@
   </div>
   <div class="col-6">
     <form [formGroup]="approveForm">
-      <mat-card>
+      <mat-card class="canCall">
         <mat-card-header>
             <button mat-card-avatar mat-icon-button (click)="openDialog('approve')">
                 <mat-icon class="iconMargin">info</mat-icon>
@@ -99,18 +99,18 @@
                     Advanced Token Functions
                 </mat-panel-title>
                 <mat-panel-description>
-                    Mint, sanction, open/close market, set price, buy, sell, burn, transfer ownership
+                    Mint, sanction, open/close market, set price, buy, sell, burn
                 </mat-panel-description>
                 </mat-expansion-panel-header>
                     <p *ngIf="model.sellPrice !== null">
-                        <strong>Market Open:</strong> {{model.buySellState}} | <strong>Sell Price:</strong> {{model.sellPrice}} ETH | <strong>Buy Price:</strong> {{model.buyPrice}} ETH | 
-                        <strong>Contract Balance: </strong>{{model.contractBalance}} ETH | <strong>DUN Tokens: </strong>{{model.dunTokensBalance}} DUN
+                        <strong>Market Open:</strong> {{model.buySellState}} | <strong>Sell Price:</strong> {{model.sellPrice}} ETH | <strong>Buy Price:</strong> {{model.buyPrice}} ETH<br>
+                        <strong>Contract Balance: </strong>{{model.contractBalance}} ETH | <strong>Available to Buy: </strong>{{model.dunTokensBalance}} DUN | <strong>Total supply: </strong>{{model.totalSupply}} DUN
                     </p>
 
                     <div class="row">
                         <div class="col-6">
                             <form [formGroup]="setPricesForm">
-                                <mat-card>
+                                <mat-card class="needConsensus">
                                     <mat-card-header>
                                         <button mat-card-avatar mat-icon-button (click)="openDialog('setBuySellPrice')">
                                             <mat-icon class="iconMargin">info</mat-icon>
@@ -135,7 +135,7 @@
                             </form>
                         </div>
                         <div class="col-6">
-                            <mat-card>
+                            <mat-card class="needConsensus">
                                 <mat-card-header>
                                     <button mat-card-avatar mat-icon-button (click)="openDialog('allowBuySell')">
                                         <mat-icon class="iconMargin">info</mat-icon>
@@ -153,13 +153,13 @@
                     <div class="row">
                         <div class="col-6">
                             <form [formGroup]="mintForm">
-                                <mat-card>
+                                <mat-card class="needConsensus">
                                     <mat-card-header>
                                         <button mat-card-avatar mat-icon-button (click)="openDialog('mint')">
                                             <mat-icon class="iconMargin">info</mat-icon>
                                         </button>
                                         <mat-card-title>Mint</mat-card-title>
-                                    </mat-card-header>                                       
+                                    </mat-card-header>                           
                                     <mat-card-subtitle><em>Only consensus can mint</em></mat-card-subtitle>
                                     <mat-card-content>
                                     <mat-form-field class="address-field">
@@ -180,13 +180,14 @@
 
                         <div class="col-6">
                             <form [formGroup]="burnFromForm">
-                                <mat-card>
+                                <mat-card class="needConsensus">
                                     <mat-card-header>
                                         <button mat-card-avatar mat-icon-button (click)="openDialog('burnFrom')">
                                             <mat-icon class="iconMargin">info</mat-icon>
                                         </button>
                                         <mat-card-title>Burn From</mat-card-title>
                                     </mat-card-header>                                       
+                                    <mat-card-subtitle><em>Only consensus can burn from</em></mat-card-subtitle>
                                     <mat-card-content>
                                     <mat-form-field class="address-field">
                                         <input type="text" matInput id="burnFromAddr" placeholder="From Address" 
@@ -207,7 +208,7 @@
                     <div class="row">
                         <div class="col-6">    
                             <form [formGroup]="sellTokenForm">
-                                <mat-card>
+                                <mat-card class="canCall">
                                     <mat-card-header>
                                         <button mat-card-avatar mat-icon-button (click)="openDialog('sellTokens')">
                                             <mat-icon class="iconMargin">info</mat-icon>
@@ -227,7 +228,7 @@
 
                         <div class="col-6">
                             <form [formGroup]="buyTokenForm">
-                                <mat-card>
+                                <mat-card class="canCall">
                                     <mat-card-header>
                                         <button mat-card-avatar mat-icon-button (click)="openDialog('buyTokens')">
                                             <mat-icon class="iconMargin">info</mat-icon>
@@ -248,7 +249,7 @@
                     <div class="row">
                         <div class="col-6"> 
                             <form [formGroup]="sanctionForm">
-                                <mat-card>
+                                <mat-card class="needConsensus">
                                     <mat-card-header>
                                         <button mat-card-avatar mat-icon-button (click)="openDialog('sanctionMember')">
                                             <mat-icon class="iconMargin">info</mat-icon>
@@ -272,7 +273,7 @@
                             </form>
                         </div>
                         <div class="col-6"> 
-                            <mat-card [formGroup]="checkSanctionForm">
+                            <mat-card [formGroup]="checkSanctionForm" class="readOnly">
                                 <mat-card-header>
                                     <button mat-card-avatar mat-icon-button (click)="openDialog('isMemberSanctioned')">
                                         <mat-icon class="iconMargin">info</mat-icon>
@@ -292,6 +293,34 @@
                         </div>
                     </div><!-- end row -->
                     <div class="row">
+                        <div class="col-6"> 
+                            <form [formGroup]="allowanceForm">
+                                <mat-card class="readOnly">
+                                    <mat-card-header>
+                                        <button mat-card-avatar mat-icon-button (click)="openDialog('checkAllowance')">
+                                            <mat-icon class="iconMargin">info</mat-icon>
+                                        </button>
+                                        <mat-card-title>Check Allowance</mat-card-title>
+                                    </mat-card-header>
+                                    <mat-card-content>
+                                    <mat-form-field>
+                                        <input matInput placeholder="Address granting allowance" #grantAllowanceAddr formControlName="addr">
+                                    </mat-form-field>
+                                    <mat-form-field>
+                                        <input matInput placeholder="Address allowed" #allowedAllowanceAddr formControlName="addr">
+                                    </mat-form-field>
+                                    <button mat-raised-button  color="primary" (click)="checkAllowance(grantAllowanceAddr.value, allowedAllowanceAddr.value)" 
+                                    [disabled]="!allowanceForm.valid">Check</button>
+                                    <strong> {{model.allowanceAmount}}</strong>
+                                    </mat-card-content>
+                                </mat-card>
+                            </form>
+                        </div>
+                        <div class="col-6"> 
+
+                        </div>
+                    </div><!-- end row -->
+                    <!-- <div class="row">
                         <div class="col-6">                    
                             <form [formGroup]="transferOwnershipForm">
                                 <mat-card>
@@ -315,7 +344,7 @@
                         <div class="col-6">                    
 
                         </div>
-                    </div> <!-- end row -->
+                    </div> -->
             </mat-expansion-panel>
         </mat-accordion>
     </div>

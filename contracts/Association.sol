@@ -260,7 +260,8 @@ contract Association is owned, tokenRecipient {
 
             p.proposalPassed = true;
         } else {
-            // Proposal failed
+            // Proposal failed, mark proposal as having executed
+            p.executed = true;
             p.proposalPassed = false;
         }
 

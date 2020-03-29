@@ -29,6 +29,7 @@ export class TokenERC20Component implements OnInit {
   buyTokenForm: FormGroup;
   sanctionForm: FormGroup;
   checkSanctionForm: FormGroup;
+  allowanceForm: FormGroup;
 
   model = {
     address: '',
@@ -40,7 +41,7 @@ export class TokenERC20Component implements OnInit {
     receiver: '',
     balance: 0,
     account: '',
-    balanceOf: 0,
+    balanceOf: '',
     newOwner: '',
     mintAmount: 0,
     mintReceiver: '',
@@ -54,7 +55,9 @@ export class TokenERC20Component implements OnInit {
     sanctionAddr: '',
     sanctionState: '',
     isSanctioned: '',
-    dunTokensBalance: ''
+    dunTokensBalance: '',
+    allowanceAmount: '',
+    totalSupply: ''
   };
 
   status = '';
@@ -65,7 +68,6 @@ export class TokenERC20Component implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('OnInit: ' + this.web3Service);
     this.watchAccount();
     this.web3Service.artifactsToContract(token_artifacts)
       .then((TokenAbstraction) => {
@@ -121,6 +123,9 @@ export class TokenERC20Component implements OnInit {
       addr: ['', [Validators.required, Validators.minLength(42), Validators.maxLength(42)]],
       bool: ['', Validators.required]
     });
+    this.allowanceForm = this.fb.group({
+        addr: ['', [Validators.required, Validators.minLength(42), Validators.maxLength(42)]]
+      });
     this.checkSanctionForm = this.fb.group({
       addr: ['', [Validators.required, Validators.minLength(42), Validators.maxLength(42)]]
     });
@@ -157,6 +162,7 @@ export class TokenERC20Component implements OnInit {
       const deployedTokenERC20 = await this.TokenERC20.deployed();
       this.model.balance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(this.model.account));
       this.model.dunTokensBalance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(deployedTokenERC20.address));
+      this.model.totalSupply = this.web3Service.convertWeitoETH(await deployedTokenERC20.totalSupply.call());
       this.model.sellPrice = this.web3Service.convertWeitoETH(await deployedTokenERC20.sellPrice.call());
       this.model.buyPrice = this.web3Service.convertWeitoETH(await deployedTokenERC20.buyPrice.call());
       this.model.buySellState = await deployedTokenERC20.buySellAllowed.call({from: this.model.account});
@@ -300,7 +306,7 @@ export class TokenERC20Component implements OnInit {
       }
     } catch (e) {
       console.log(e);
-      this.setStatus('Error sending coin; see log.');
+      this.setStatus('Error approving; see log.');
     }
   }
 
@@ -327,7 +333,7 @@ export class TokenERC20Component implements OnInit {
       }
     } catch (e) {
       console.log(e);
-      this.setStatus('Error making proposal; see log.');
+      this.setStatus('Error transferring ownership; see log.');
     }
   }
 
@@ -401,7 +407,6 @@ export class TokenERC20Component implements OnInit {
     try {
       const deployedTokenERC20 = await this.TokenERC20.deployed();
       const transaction = await deployedTokenERC20.allowBuySell.sendTransaction({from: this.model.account});
-
       if (!transaction) {
         this.setStatus('Transaction failed!');
       } else {
@@ -465,6 +470,19 @@ export class TokenERC20Component implements OnInit {
       this.setStatus('Error buying; see log.');
     }
     this.refreshBalance();
+  }
+
+  async checkAllowance(addr1, addr2) {
+    console.log('Checking whether : ' + addr1 + ' allows ' + addr2);
+
+    try {
+      const deployedTokenERC20 = await this.TokenERC20.deployed();
+      this.model.allowanceAmount = await deployedTokenERC20.allowance.call(addr1, addr2, {from: this.model.account});
+      console.log('Allowed amount: ' + this.model.allowanceAmount);
+    } catch (e) {
+      console.log(e);
+      this.setStatus('Error checking allowance; see log.');
+    }
   }
 
   async checkSanction(addr) {
