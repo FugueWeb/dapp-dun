@@ -8,7 +8,7 @@ Install [Metamask](https://metamask.io/) in Chrome, Firefox, or [Brave browser](
 
 Backup your 12-word seed (copy it somewhere safe) and request test ether for the Ropsten network. Good, quick [instructions here](https://blog.bankex.org/how-to-buy-ethereum-using-metamask-ccea0703daec) for how to do this. 
 
-# Join the Decentralized UN
+## Join the Decentralized UN
 
 This dApp consists of two smart contracts: one for Governance and one for Token economics. The token created by contract [DUNToken.sol](https://ropsten.etherscan.io/address/0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D) is what affords membership to the Decentralized United Nations (d-UN). Moreover, the amount of tokens you have determines the weight of your vote toward a given proposal. There are two options for you to get these stakeholder tokens.
 
@@ -18,14 +18,14 @@ This dApp consists of two smart contracts: one for Governance and one for Token 
 
 To know whether you have received your tokens, open Metamask, click the menu bar (top left), then click 'Add Token' at the bottom. Choose 'Custom Token' and paste in the Token address shown on the dApp webpage. The symbol is DUN and the decimal is 18. When you open the menu again, you should see your current balance. The dApp also displays your token balance.
 
-# Governance Model and Token Capabilities
+## Governance Model and Token Capabilities
 
 Some of the key details that determine the governance model are:
 * the total minutes required for debate of a proposal
 * the quorum, or the amount of votes required for a proposal to pass (or fail)
 * the token address and its distribution that enables stakeholders to have agency within the Decentralized UN
 
-# Using the dApp
+## Using the dApp
 
 **Checklist - Ensure that you are:** 
 * on the [dApp webpage](https://fugueweb.com/dev/dun)
@@ -63,7 +63,13 @@ Some of the key details that determine the governance model are:
 
 `Change Voting Rules` is special, since only the contract owner of the Governance contract can call it. So, for all intents and purposes, there is a benevolent dictatorship at play for purposes of this testing environment, meaning whoever controls that address can unilaterally change key aspects of the governance model. **HOWEVER** there are transparent ways to remove or redistribute this power once the model is established and before any voting/proposal making begins, which can be explored/discussed later.
 
-# Feedback and Trouble shooting 
+## Testing
+
+* Install Truffle: `npm install truffle -g`
+* Run a local blockchain, I suggest [Ganache](https://www.trufflesuite.com/docs/ganache/overview)
+* `truffle test --network ganache`
+
+## Feedback and Trouble shooting 
 
 [Change Log](https://github.com/FugueWeb/dapp-dun/blob/master/.github/CHANGELOG.md) and [Contributing](https://github.com/FugueWeb/dapp-dun/blob/master/.github/CONTRIBUTING.md) guidelines
 
@@ -75,7 +81,7 @@ This is an open source project. Please post any comments - technical, political,
 
 * If the dApp is not reading your address, go into Metamask's settings and under Security & Privacy, turn off Privacy Mode. Now refresh the page. 
 
-# Resources
+## Resources
 
 * Truffle and [Angular Box](https://truffleframework.com/boxes/angular-truffle-box)
 * Angular 8
