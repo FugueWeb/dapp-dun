@@ -5,68 +5,40 @@ import {TxService} from '../util/transaction.service';
 import { MatSnackBar } from '@angular/material';
 import {MatDialog} from '@angular/material';
 import { DialogComponent } from '../util/dialog.component';
+import { Gov } from '../models/gov';
+import { Proposal } from '../models/proposal';
+import { Contract } from '../models/contract';
 
 declare let require: any;
-const association_artifacts = require('../../../build/contracts/Association.json');
+const governance_artifacts = require('../../../build/contracts/Governance.json');
+const token_artifacts = require('../../../build/contracts/DUNToken.json');
 const dialog_data = require('./info.json');
+const participants = require('../../assets/participants.json')
 
 @Component({
-  selector: 'app-association',
-  templateUrl: './association.component.html',
-  styleUrls: ['./association.component.css']
+  selector: 'app-governance',
+  templateUrl: './governance.component.html',
+  styleUrls: ['./governance.component.css']
 })
-export class AssociationComponent implements OnInit {
+export class GovernanceComponent implements OnInit {
   accounts: string[];
   proposals: number[];
-  Association: any;
+  Governance: any;
+  TokenERC20: any;
+  status = '';
+  selectedParticipant: string;
   receiveApprovalForm: FormGroup;
   newProposalForm: FormGroup;
   voteForm: FormGroup;
   checkProposalForm: FormGroup;
+  checkRepForm: FormGroup;
   executeProposalForm: FormGroup;
   changeVotingForm: FormGroup;
   transferOwnershipForm: FormGroup;
 
-  contract = {
-    address: '',
-    quorum: 0,
-    minMinutes: 0,
-    sharesAddress: '',
-    numProposals: 0
-  };
-
-  model = {
-    beneficiary: '',
-    amount: 0,
-    justification: '',
-    data: '',
-    account: '',
-    balance: 0,
-    proposal: {
-        amount: 0,
-        desc: '',
-        executed: false,
-        minExecutionDate: 0,
-        numberOfVotes: 0,
-        proposalHash: 0,
-        proposalPassed: false,
-        beneficiary: ''
-    },
-    proposalNum: 0,
-    vote: '',
-    checkProp: '',
-    tokenAddr: '',
-    quorum: '',
-    minMinutes: '',
-    newOwner: ''
-  };
-
-  convert = {
-    wei: 0,
-    ether: 0
-  };
-
-  status = '';
+  model: Gov = new Gov();
+  proposal: Proposal = new Proposal();
+  govContract: Contract = new Contract();
 
   constructor(private web3Service: Web3Service, private matSnackBar: MatSnackBar,
     private txService: TxService, private fb: FormBuilder, private dialog: MatDialog) {
@@ -76,12 +48,17 @@ export class AssociationComponent implements OnInit {
   ngOnInit(): void {
     console.log('OnInit: ' + this.web3Service);
     this.watchAccount();
-    this.web3Service.artifactsToContract(association_artifacts)
-      .then((AssociationAbstraction) => {
-        this.Association = AssociationAbstraction;
-        this.getAssociationData();
+    this.web3Service.artifactsToContract(governance_artifacts)
+      .then((GovernanceAbstraction) => {
+        this.Governance = GovernanceAbstraction;
+        this.getGovernanceData();
       });
     this.createFormGroups();
+    this.web3Service.artifactsToContract(token_artifacts)
+      .then((TokenAbstraction) => {
+        this.TokenERC20 = TokenAbstraction;
+      });
+    this.model.participants = participants
   }
 
   watchAccount() {
@@ -92,7 +69,30 @@ export class AssociationComponent implements OnInit {
     });
   }
 
-  // Form validation
+  async getGovernanceData() {
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
+      return;
+    }
+
+    try {
+      const deployedGovernance = await this.Governance.deployed();
+      console.log(deployedGovernance);
+
+      this.govContract.address = deployedGovernance.address;
+      this.govContract.quorum = await deployedGovernance.minimumQuorum.call();
+      this.govContract.minMinutes = await deployedGovernance.debatingPeriodInMinutes.call();
+      this.govContract.sharesAddress = await deployedGovernance.sharesTokenAddress.call();
+      this.govContract.numProposals = await deployedGovernance.numProposals.call();
+
+    } catch (e) {
+      console.log(e);
+      this.setStatus('Error getting Governance data; see log.');
+    }
+  }
+
+  /************* FORM VALIDATION & ERROR HANDLING *************/
+
   createFormGroups() {
     this.receiveApprovalForm = this.fb.group({
       addr: ['', [Validators.required, Validators.minLength(42), Validators.maxLength(42)]],
@@ -112,6 +112,9 @@ export class AssociationComponent implements OnInit {
       number: ['', Validators.required],
       data: ['', Validators.required]
     });
+    this.checkRepForm = this.fb.group({
+      addr: ['', [Validators.required, Validators.minLength(42), Validators.maxLength(42)]],
+    });
     this.voteForm = this.fb.group({
       number: ['', Validators.required],
       bool: ['', Validators.required]
@@ -130,20 +133,6 @@ export class AssociationComponent implements OnInit {
     });
   }
 
-  openDialog(index): void {
-      let choice;
-      for (let i = 0; i < dialog_data.length; i++) {
-        if(dialog_data[i].id === index) {
-            choice = dialog_data[i];
-        }
-      }
-      
-    this.dialog.open(DialogComponent, {
-      width: '400px',
-      data: {id: choice.id, desc: choice.desc}
-    });
-  }
-
   receiveApprovalErrorMsg(value) {
     return this.receiveApprovalForm.hasError('required', [value]) ? 'Required' :
       this.receiveApprovalForm.hasError('minlength', [value]) ? 'Invalid address' :
@@ -158,8 +147,12 @@ export class AssociationComponent implements OnInit {
 
   checkProposalErrorMsg(value) {
     return this.checkProposalForm.hasError('required', [value]) ? 'Required' :
-    this.checkProposalForm.hasError('minlength', [value]) ? 'Invalid address' :
-    this.checkProposalForm.hasError('maxlength', [value]) ? 'Invalid address' : '';
+      this.checkProposalForm.hasError('minlength', [value]) ? 'Invalid address' :
+      this.checkProposalForm.hasError('maxlength', [value]) ? 'Invalid address' : '';
+  }
+
+  checkRepErrorMsg(value) {
+    return this.checkRepForm.hasError('required', [value]) ? 'Required' : '';
   }
 
   voteErrorMsg(value) {
@@ -170,39 +163,7 @@ export class AssociationComponent implements OnInit {
     return this.executeProposalForm.hasError('required', [value]) ? 'Required' : '';
   }
 
-  getWeiFromETH(amount) {
-    this.convert.wei = this.web3Service.convertETHToWei(amount);
-  }
-
-  async getAssociationData() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
-      return;
-    }
-
-    try {
-      const deployedAssociation = await this.Association.deployed();
-      console.log(deployedAssociation);
-
-      this.contract.address = deployedAssociation.address;
-      this.contract.quorum = await deployedAssociation.minimumQuorum.call();
-      this.contract.minMinutes = await deployedAssociation.debatingPeriodInMinutes.call();
-      this.contract.sharesAddress = await deployedAssociation.sharesTokenAddress.call();
-      this.contract.numProposals = await deployedAssociation.numProposals.call();
-
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error getting Association data; see log.');
-    }
-  }
-
-  updateTx(tx) {
-    this.txService.updateTx(tx);
-  }
-
-  setStatus(status) {
-    this.matSnackBar.open(status, null, {duration: 3000});
-  }
+  /************* SET STATE *************/
 
   setAmount(e) {
     console.log('Setting amount: ' + e.target.value);
@@ -248,10 +209,12 @@ export class AssociationComponent implements OnInit {
     console.log('Transfer Owner: ' + e.target.value);
     this.model.newOwner = e.target.value;
   }
-  
+
+  /************* CONTRACT FUNCTIONS *************/
+
   async newProposal() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
       return;
     }
 
@@ -264,15 +227,17 @@ export class AssociationComponent implements OnInit {
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.newProposal.sendTransaction(beneficiary, amount, justification, data, {from: this.model.account});
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.newProposal.sendTransaction(beneficiary, amount, justification, data, {
+        from: this.model.account
+      });
 
       if (!transaction) {
         this.setStatus('Transaction failed!');
       } else {
         this.setStatus('Transaction complete!');
         this.updateTx(transaction);
-        this.getAssociationData();
+        await this.getGovernanceData();
       }
     } catch (e) {
       console.log(e);
@@ -284,18 +249,20 @@ export class AssociationComponent implements OnInit {
     console.log('Checking proposal number: ' + pNumber);
 
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const result = await deployedAssociation.proposals.call(pNumber, {from: this.model.account});;
+      const deployedGovernance = await this.Governance.deployed();
+      const result = await deployedGovernance.proposals.call(pNumber, {
+        from: this.model.account
+      });
       console.log(result);
-      this.model.proposal.amount = result.amount;
-      this.model.proposal.desc = result.description;
-      this.model.proposal.beneficiary = result.recipient;
-      this.model.proposal.executed = result.executed;
-      this.model.proposal.minExecutionDate = result.minExecutionDate;
-      this.model.proposal.numberOfVotes = result.numberOfVotes;
-      this.model.proposal.proposalHash = result.proposalHash;
-      this.model.proposal.proposalPassed = result.proposalPassed;
-      //this.model.proposal = String(result).split(',');
+      this.proposal.amount = result.amount;
+      this.proposal.desc = result.description;
+      this.proposal.beneficiary = result.recipient;
+      this.proposal.executed = result.executed;
+      this.proposal.minExecutionDate = result.minExecutionDate;
+      this.proposal.numberOfVotes = result.numberOfVotes;
+      this.proposal.proposalHash = result.proposalHash;
+      this.proposal.proposalPassed = result.proposalPassed;
+      //this.proposal = String(result).split(',');
     } catch (e) {
       console.log(e);
       this.setStatus('Error getting proposal; see log.');
@@ -303,8 +270,8 @@ export class AssociationComponent implements OnInit {
   }
 
   async checkProposalCode() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
       return;
     }
 
@@ -317,8 +284,10 @@ export class AssociationComponent implements OnInit {
 
     this.setStatus('Checking Proposal... (please wait)');
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.checkProposalCode.call(proposalNum, beneficiary, amount, data, {from: this.model.account});
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.checkProposalCode.call(proposalNum, beneficiary, amount, data, {
+        from: this.model.account
+      });
 
       if (!transaction) {
         this.model.checkProp = transaction;
@@ -335,8 +304,8 @@ export class AssociationComponent implements OnInit {
   }
 
   async vote() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
       return;
     }
 
@@ -347,15 +316,12 @@ export class AssociationComponent implements OnInit {
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.vote.sendTransaction(proposalNum, choice, {from: this.model.account});
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.vote.sendTransaction(proposalNum, choice, {
+        from: this.model.account
+      });
 
-      if (!transaction) {
-        this.setStatus('Transaction failed!');
-      } else {
-        this.setStatus('Transaction complete!');
-        this.updateTx(transaction);
-      }
+      this.txSuccess(transaction);
     } catch (e) {
       console.log(e);
       this.setStatus('Error voting for proposal; see log.');
@@ -363,8 +329,8 @@ export class AssociationComponent implements OnInit {
   }
 
   async executeProposal() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
       return;
     }
 
@@ -375,15 +341,14 @@ export class AssociationComponent implements OnInit {
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.executeProposal.sendTransaction(proposalNum, data, {from: this.model.account});
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.executeProposal.sendTransaction(proposalNum, data, {
+        from: this.model.account
+      });
 
-      if (!transaction) {
-        this.setStatus('Transaction failed!');
-      } else {
-        this.setStatus('Transaction complete!');
-        this.updateTx(transaction);
-      }
+      this.txSuccess(transaction);
+      await this.getGovernanceData();
+      this.web3Service.updateContract(); //alert Token contract to refresh state
     } catch (e) {
       console.log(e);
       this.setStatus('Error executing proposal; see log.');
@@ -391,27 +356,24 @@ export class AssociationComponent implements OnInit {
   }
 
   async receiveApproval() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
       return;
     }
 
     const data = this.model.data;
     const amount = this.model.amount;
 
-    console.log('Receive approval from ' + this.model.account + ' for ' + this.contract.sharesAddress + ' to receive ' + amount + ' with data ' + data);
+    console.log('Receive approval from ' + this.model.account + ' for ' + this.govContract.sharesAddress + ' to receive ' + amount + ' with data ' + data);
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.receiveApproval.sendTransaction(this.model.account, amount, this.contract.sharesAddress, data, {from: this.model.account});
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.receiveApproval.sendTransaction(this.model.account, amount, this.govContract.sharesAddress, data, {
+        from: this.model.account
+      });
 
-      if (!transaction) {
-        this.setStatus('Transaction failed!');
-      } else {
-        this.setStatus('Transaction complete!');
-        this.updateTx(transaction);
-      }
+      this.txSuccess(transaction);
     } catch (e) {
       console.log(e);
       this.setStatus('Error receiving approval; see log.');
@@ -419,26 +381,24 @@ export class AssociationComponent implements OnInit {
   }
 
   async transferOwnership() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
       return;
     }
 
     const newOwner = this.model.newOwner;
 
-    console.log('Transfer ownership of Association to ' + newOwner);
+    console.log('Transfer ownership of Governance to ' + newOwner);
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.transferOwnership.sendTransaction(newOwner, {from: this.model.account});
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.transferOwnership.sendTransaction(newOwner, {
+        from: this.model.account
+      });
 
-      if (!transaction) {
-        this.setStatus('Transaction failed!');
-      } else {
-        this.setStatus('Transaction complete!');
-        this.updateTx(transaction);
-      }
+
+      this.txSuccess(transaction);
     } catch (e) {
       console.log(e);
       this.setStatus('Error transferring ownership; see log.');
@@ -446,8 +406,8 @@ export class AssociationComponent implements OnInit {
   }
 
   async changeVotingRules() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
       return;
     }
 
@@ -459,8 +419,10 @@ export class AssociationComponent implements OnInit {
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.changeVotingRules.sendTransaction(tokenAddr, quorum, minMinutes, {from: this.model.account});
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.changeVotingRules.sendTransaction(tokenAddr, quorum, minMinutes, {
+        from: this.model.account
+      });
 
       if (!transaction) {
         this.model.checkProp = transaction;
@@ -469,7 +431,7 @@ export class AssociationComponent implements OnInit {
         this.model.checkProp = transaction;
         this.setStatus('Transaction complete!');
         this.updateTx(transaction);
-        this.getAssociationData();
+        await this.getGovernanceData();
       }
     } catch (e) {
       console.log(e);
@@ -479,8 +441,8 @@ export class AssociationComponent implements OnInit {
   }
 
   async dissolve() {
-    if (!this.Association) {
-      this.setStatus('Association is not loaded, unable to send transaction');
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
       return;
     }
 
@@ -488,18 +450,93 @@ export class AssociationComponent implements OnInit {
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedAssociation = await this.Association.deployed();
-      const transaction = await deployedAssociation.dissolve.sendTransaction({from: this.model.account});
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.dissolve.sendTransaction({
+        from: this.model.account
+      });
 
-      if (!transaction) {
-        this.setStatus('Transaction failed!');
-      } else {
-        this.setStatus('Transaction complete!');
-        this.updateTx(transaction);
-      }
+      this.txSuccess(transaction);
     } catch (e) {
       console.log(e);
       this.setStatus('Error with self destruct; see log.');
     }
+  }
+
+  async checkReputation(repAddress) {
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
+      return;
+    }
+
+    console.log('Checking Reputation');
+
+    this.setStatus('Checking Reputation... (please wait)');
+    try {
+      const deployedGovernance = await this.Governance.deployed();
+      const transaction = await deployedGovernance.balanceOf.call(repAddress, {
+        from: this.model.account
+      });
+
+      const deployedTokenERC20 = await this.TokenERC20.deployed();
+      this.model.DUNbalance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(repAddress, {
+        from: this.model.account
+      }));
+      this.web3Service.getETHBalance(repAddress).then(res => {
+        this.model.participantETHBalance = this.web3Service.convertWeitoETH(res);
+      });
+      
+      if (!transaction) {
+        this.model.checkProp = transaction;
+        this.setStatus('Check Reputation failed!');
+      } else {
+        this.model.checkProp = transaction;
+        this.model.reputation = transaction.words[0];
+        this.setStatus('Check Reputation complete!');
+      }
+    } catch (e) {
+      console.log(e);
+      this.setStatus('Error with Reputation Details; see log.');
+    }
+  }
+
+  /************* HELPER FUNCTIONS *************/
+
+  txSuccess(success) {
+    if (!success) {
+      this.setStatus('Transaction failed!');
+    } else {
+      this.setStatus('Transaction complete!');
+      this.updateTx(success);
+    }
+  }
+
+  openDialog(index): void {
+    let choice;
+    for (let i = 0; i < dialog_data.length; i++) {
+      if (dialog_data[i].id === index) {
+        choice = dialog_data[i];
+      }
+    }
+    this.dialog.open(DialogComponent, {
+      width: '400px',
+      data: {
+        id: choice.id,
+        desc: choice.desc
+      }
+    });
+  }
+
+  updateTx(tx) {
+    this.txService.updateTx(tx);
+  }
+
+  setStatus(status: string) {
+    this.matSnackBar.open(status, null, {
+      duration: 3000
+    });
+  }
+
+  getWeiFromETH(amount) {
+    this.model.convert_wei = this.web3Service.convertETHToWei(amount);
   }
 }

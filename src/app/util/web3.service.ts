@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import { MatSnackBar } from '@angular/material';
+import MetaMaskOnboarding from '@metamask/onboarding';
 //import * as contract from 'truffle-contract';
 const contract = require('@truffle/contract');
 import {Subject} from 'rxjs';
@@ -12,17 +13,15 @@ export class Web3Service {
   public web3: any;
   private accounts: string[];
   public ready = false;
-  public MetaCoin: any;
-  public accountsObservable = new Subject<string[]>();
+  public accountsObservable = new Subject < string[] > ();
+  public updateContractObservable = new Subject < any > ();
+  private onboarding: any;
 
   constructor(private matSnackBar: MatSnackBar) {
     window.addEventListener('load', (event) => {
       this.bootstrapWeb3();
+      this.onboarding = new MetaMaskOnboarding();
     });
-  }
-
-  setStatus(status) {
-    this.matSnackBar.open(status, null, {duration: 4000});
   }
 
   public bootstrapWeb3() {
@@ -37,9 +36,9 @@ export class Web3Service {
       // Hack to provide backwards compatibility for Truffle, which uses web3js 0.20.x
       Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
       // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-      // 8545 for Metamask, 7545 for Ganache
-      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-      //this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
+      // 8545 for Testnet, 7545 for Ganache
+      //this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     }
     this.checkNetwork();
     setInterval(() => this.refreshAccounts(), 5000);
@@ -55,13 +54,12 @@ export class Web3Service {
     const contractAbstraction = contract(artifacts);
     contractAbstraction.setProvider(this.web3.currentProvider);
     return contractAbstraction;
-
   }
 
-  async checkNetwork() {
+  private async checkNetwork() {
     let netID;
     await this.web3.eth.net.getNetworkType((err, network) => {
-        netID = network;
+      netID = network;
     });
     switch (netID) {
       case 'main':
@@ -83,6 +81,20 @@ export class Web3Service {
         this.setStatus('Unknown network. Please connect to Ropsten in Metamask.');
         break;
     }
+  }
+
+  public async onboardMetamask() {
+    if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
+      //onboardButton.disabled = true;
+      this.onboarding.startOnboarding();
+    } else if (this.accounts && this.accounts.length > 0) {
+      //onboardButton.disabled = true;
+      this.onboarding.stopOnboarding();
+    } else {
+      await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+    };
   }
 
   private refreshAccounts() {
@@ -108,6 +120,16 @@ export class Web3Service {
 
       this.ready = true;
     });
+  }
+
+  private setStatus(status) {
+    this.matSnackBar.open(status, null, {
+      duration: 4000
+    });
+  }
+
+  public updateContract(){
+    this.updateContractObservable.next('foo');
   }
 
   public convertETHToWei(amount) {

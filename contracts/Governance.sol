@@ -1,5 +1,6 @@
-pragma solidity ^0.5.0;
-//pragma solidity >=0.4.22 <0.6.0;
+pragma solidity ^0.6.0;
+
+import "./DUNKollectible.sol";
 
 contract owned {
     address public owner;
@@ -9,11 +10,11 @@ contract owned {
     }
 
     modifier onlyOwner {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Not authorized");
         _;
     }
 
-    function transferOwnership(address newOwner) onlyOwner public {
+    function transferOwnership(address newOwner) public onlyOwner {
         owner = newOwner;
     }
 }
@@ -22,44 +23,46 @@ contract tokenRecipient is owned {
     event receivedEther(address sender, uint amount);
     event receivedTokens(address _from, uint256 _value, address _token, bytes _extraData);
 
-    function receiveApproval(address _from, uint256 _value, address payable _token, bytes memory _extraData) onlyOwner public {
+    function receiveApproval(address _from, uint256 _value, address payable _token, bytes memory _extraData) public onlyOwner {
         Token t = Token(_token);
-        require(t.transferFrom(_from, address(this), _value));
+        require(t.transferFrom(_from, address(this), _value), "Transfer From Failed");
         emit receivedTokens(_from, _value, _token, _extraData);
     }
 
-    function () external payable {
+    receive() external payable {
         emit receivedEther(msg.sender, msg.value);
     }
 }
 
-contract Token {
+abstract contract Token {
     mapping (address => uint256) public balanceOf;
     mapping (address => mapping (address => uint256)) public allowance;
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
-    function burn(uint256 _value) public returns (bool success);
+    function transferFrom(address _from, address _to, uint256 _value) public virtual returns (bool success);
+    function burn(uint256 _value) public virtual returns (bool success);
     mapping (address => bool) public frozenAccount;
-    function() external payable { }
+    receive() external payable { }
 }
 
 /**
- * The shareholder association contract itself
+ * The shareholder governance contract
  */
-contract Association is owned, tokenRecipient {
+contract Governance is owned, tokenRecipient, DUNKollectible {
 
     uint public minimumQuorum;
     uint public debatingPeriodInMinutes;
     Proposal[] public proposals;
     uint public numProposals;
     Token public sharesTokenAddress;
+    string constant TOKEN_URI = "https://ropsten.etherscan.io/tx/";
 
     event ProposalAdded(uint proposalID, address recipient, uint amount, string description);
     event Voted(uint proposalID, bool position, address voter);
-    event ProposalTallied(uint proposalID, uint result, uint quorum, bool active);
+    event ProposalTallied(uint proposalID, uint result, uint quorum, bool active, uint256 newItemId);
     event ChangeOfRules(uint newMinimumQuorum, uint newDebatingPeriodInMinutes, address newSharesTokenAddress);
 
     struct Proposal {
         address recipient;
+        address proposer;
         uint amount;
         string description;
         uint minExecutionDate;
@@ -103,7 +106,7 @@ contract Association is owned, tokenRecipient {
      * @param minimumSharesToPassAVote proposal can vote only if the sum of shares held by all voters exceed this number
      * @param minutesForDebate the minimum amount of delay between when a proposal is made and when it can be executed
      */
-    function changeVotingRules(Token sharesAddress, uint minimumSharesToPassAVote, uint minutesForDebate) onlyOwner public {
+    function changeVotingRules(Token sharesAddress, uint minimumSharesToPassAVote, uint minutesForDebate) public onlyOwner {
         sharesTokenAddress = Token(sharesAddress);
         if (minimumSharesToPassAVote == 0 ) minimumSharesToPassAVote = 1;
         minimumQuorum = minimumSharesToPassAVote;
@@ -127,12 +130,14 @@ contract Association is owned, tokenRecipient {
         string memory jobDescription,
         bytes memory transactionBytecode
     )
-        onlyShareholders public
+        public onlyShareholders
         returns (uint proposalID)
     {
-        proposalID = proposals.length++;
+        proposalID = proposals.length;
+        proposals.push();
         Proposal storage p = proposals[proposalID];
         p.recipient = beneficiary;
+        p.proposer = msg.sender;
         p.amount = weiAmount;
         p.description = jobDescription;
         p.proposalHash = keccak256(abi.encodePacked(beneficiary, weiAmount, transactionBytecode));
@@ -163,7 +168,7 @@ contract Association is owned, tokenRecipient {
         string memory jobDescription,
         bytes memory transactionBytecode
     )
-        onlyShareholders public
+        public onlyShareholders
         returns (uint proposalID)
     {
         return newProposal(beneficiary, etherAmount * 1 ether, jobDescription, transactionBytecode);
@@ -183,7 +188,7 @@ contract Association is owned, tokenRecipient {
         uint weiAmount,
         bytes memory transactionBytecode
     )
-        view public
+        public view
         returns (bool codeChecksOut)
     {
         Proposal storage p = proposals[proposalNumber];
@@ -202,16 +207,18 @@ contract Association is owned, tokenRecipient {
         uint proposalNumber,
         bool supportsProposal
     )
-        onlyShareholders public
+        public onlyShareholders
         returns (uint voteID)
     {
         Proposal storage p = proposals[proposalNumber];
-        require(p.voted[msg.sender] != true);
+        require(p.voted[msg.sender] != true, "Already voted");
 
-        voteID = p.votes.length++;
+        voteID = p.votes.length;
+        p.votes.push();
+        // voteID = p.votes.length + 1;
         p.votes[voteID] = Vote({inSupport: supportsProposal, voter: msg.sender});
         p.voted[msg.sender] = true;
-        p.numberOfVotes = voteID +1;
+        p.numberOfVotes = voteID + 1;
         emit Voted(proposalNumber,  supportsProposal, msg.sender);
         return voteID;
     }
@@ -227,17 +234,16 @@ contract Association is owned, tokenRecipient {
     function executeProposal(uint proposalNumber, bytes memory transactionBytecode) public {
         Proposal storage p = proposals[proposalNumber];
 
-        require(now > p.minExecutionDate                                             // If it is past the voting deadline
-            && !p.executed                                                          // and it has not already been executed
-            && p.proposalHash == keccak256(abi.encodePacked(p.recipient, p.amount, transactionBytecode))); // and the supplied code matches the proposal...
-
+        require(now > p.minExecutionDate && !p.executed &&
+            p.proposalHash == keccak256(abi.encodePacked(p.recipient, p.amount, transactionBytecode)),
+            "MinExecDate, Executed, or ProposalHash");
 
         // ...then tally the results
         uint quorum = 0;
         uint yea = 0;
         uint nay = 0;
 
-        for (uint i = 0; i <  p.votes.length; ++i) {
+        for (uint i = 0; i < p.votes.length; ++i) {
             Vote storage v = p.votes[i];
             uint voteWeight = sharesTokenAddress.balanceOf(v.voter);
             quorum += voteWeight;
@@ -248,15 +254,17 @@ contract Association is owned, tokenRecipient {
             }
         }
 
-        require(quorum >= minimumQuorum); // Check if a minimum quorum has been reached
+        require(quorum >= minimumQuorum, "Must achieve minimum quorum");
+        uint256 NFT_ID = 0;
 
         if (yea > nay ) {
             // Proposal passed; execute the transaction
 
             p.executed = true;
-            
             (bool success, ) = p.recipient.call.value(p.amount)(transactionBytecode);
-            require(success);
+            require(success, "Call must return true");
+            //Reward proposer with NFT
+            NFT_ID = awardItem(p.proposer, TOKEN_URI);
 
             p.proposalPassed = true;
         } else {
@@ -266,7 +274,7 @@ contract Association is owned, tokenRecipient {
         }
 
         // Fire Events
-        emit ProposalTallied(proposalNumber, yea - nay, quorum, p.proposalPassed);
+        emit ProposalTallied(proposalNumber, yea - nay, quorum, p.proposalPassed, NFT_ID);
     }
 
     function dissolve() public onlyOwner {

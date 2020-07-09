@@ -1,0 +1,357 @@
+<div class="row">
+  <div class="col-6">
+    <mat-card class="readOnly">
+      <mat-card-header>
+        <button mat-card-avatar mat-icon-button (click)="openDialog('balance')">
+          <mat-icon class="iconMargin">info</mat-icon>
+        </button>
+        <mat-card-title>Balance</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field id="address-selector" class="address-field">
+          <mat-select name="account" (selectionChange)="refreshBalance()" [(value)]="model.account"
+            placeholder="Address" style="min-width: 360px;">
+            <mat-option *ngFor="let account of accounts" [value]="account">{{account}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <p>Amount of DUN Tokens: <span id="balance">{{model.balance}}</span></p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="col-6">
+    <form [formGroup]="sendTokenForm">
+      <mat-card class="canCall">
+        <mat-card-header>
+          <button mat-card-avatar mat-icon-button (click)="openDialog('sendToken')">
+            <mat-icon class="iconMargin">info</mat-icon>
+          </button>
+          <mat-card-title>Send Token</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field>
+            <input type="text" matInput placeholder="Amount" (change)="setSendAmount($event)" formControlName="amount">
+            <mat-error *ngIf="sendTokenForm.invalid">{{sendTokenErrorMsg('amount')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field class="address-field">
+            <input type="text" matInput placeholder="Receiver Address" (change)="setSendReceiver($event)"
+              formControlName="addr">
+            <mat-error *ngIf="sendTokenForm.invalid">{{sendTokenErrorMsg('addr')}}</mat-error>
+          </mat-form-field>
+          <button mat-raised-button id="send" (click)="sendCoin()" [disabled]="!sendTokenForm.valid">Send Token</button>
+        </mat-card-content>
+      </mat-card>
+    </form>
+  </div>
+</div> <!-- end row -->
+
+<div class="row">
+  <div class="col-6">
+    <mat-card class="readOnly">
+      <mat-card-header>
+        <button mat-card-avatar mat-icon-button (click)="openDialog('tokenBalance')">
+          <mat-icon class="iconMargin">info</mat-icon>
+        </button>
+        <mat-card-title>Check token balance of address</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field>
+          <input type="text" matInput #checkBalanceAddr placeholder="Address">
+        </mat-form-field>
+        <button mat-raised-button (click)="checkBalanceOf(checkBalanceAddr.value)">Check Balance</button>
+        {{model.balanceOf}}
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="col-6">
+    <form [formGroup]="approveForm">
+      <mat-card class="canCall">
+        <mat-card-header>
+          <button mat-card-avatar mat-icon-button (click)="openDialog('approve')">
+            <mat-icon class="iconMargin">info</mat-icon>
+          </button>
+          <mat-card-title>Approve</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field>
+            <input type="text" matInput placeholder="Amount" (change)="setAmount($event)" formControlName="amount">
+            <mat-error *ngIf="approveForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field class="address-field">
+            <input type="text" matInput placeholder="Receiver Address" (change)="setReceiver($event)"
+              formControlName="addr">
+            <mat-error *ngIf="approveForm.invalid">{{approveErrorMsg('addr')}}</mat-error>
+          </mat-form-field>
+          <button mat-raised-button (click)="approve()" [disabled]="!approveForm.valid">Approve</button>
+        </mat-card-content>
+      </mat-card>
+    </form>
+  </div>
+</div> <!-- end row -->
+
+<div class="row">
+  <div class="col-12">
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Advanced Token Functions
+          </mat-panel-title>
+          <mat-panel-description>
+            Mint, sanction, open/close market, set price, buy, sell, burn
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <p *ngIf="model.sellPrice !== null">
+          <strong>Market Open:</strong> {{model.buySellState}} | <strong>Sell Price:</strong> {{model.sellPrice}} ETH |
+          <strong>Buy Price:</strong> {{model.buyPrice}} ETH<br>
+          <strong>Contract Balance: </strong>{{model.contractBalance}} ETH | <strong>Available to Buy:
+          </strong>{{model.dunTokensBalance}} DUN | <strong>Total supply: </strong>{{model.totalSupply}} DUN
+        </p>
+
+        <div class="row">
+          <div class="col-6">
+            <form [formGroup]="setPricesForm">
+              <mat-card class="needConsensus">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('setBuySellPrice')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Set Buy/Sell Prices</mat-card-title>
+                </mat-card-header>
+                <mat-card-subtitle><em>Only consensus can set prices</em></mat-card-subtitle>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input type="text" matInput placeholder="Sell Price Amount (in wei)"
+                      (change)="setSellPriceAmount($event)" formControlName="amount">
+                    <mat-error *ngIf="setPricesForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input type="text" matInput placeholder="Buy Price Amount (in wei)"
+                      (change)="setBuyPriceAmount($event)" formControlName="amount">
+                    <mat-error *ngIf="setPricesForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
+                  </mat-form-field>
+                  <button mat-raised-button (click)="setPrices()" [disabled]="!setPricesForm.valid">Set Prices</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+          <div class="col-6">
+            <mat-card class="needConsensus">
+              <mat-card-header>
+                <button mat-card-avatar mat-icon-button (click)="openDialog('allowBuySell')">
+                  <mat-icon class="iconMargin">info</mat-icon>
+                </button>
+                <mat-card-title>Open/Close Market</mat-card-title>
+              </mat-card-header>
+              <mat-card-subtitle><em>Only consensus can call</em></mat-card-subtitle>
+              <mat-card-content>
+                <button mat-raised-button color="primary" (click)="allowBuySell()">Call</button>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div> <!-- end row -->
+
+        <div class="row">
+          <div class="col-6">
+            <form [formGroup]="mintForm">
+              <mat-card class="needConsensus">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('mint')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Mint</mat-card-title>
+                </mat-card-header>
+                <mat-card-subtitle><em>Only consensus can mint</em></mat-card-subtitle>
+                <mat-card-content>
+                  <mat-form-field class="address-field">
+                    <input type="text" matInput placeholder="Receiver Address" (change)="setMintReceiver($event)"
+                      formControlName="addr">
+                    <mat-error *ngIf="mintForm.invalid">{{approveErrorMsg('addr')}}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input type="text" matInput placeholder="Amount" (change)="setMintAmount($event)"
+                      formControlName="amount">
+                    <mat-error *ngIf="mintForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
+                  </mat-form-field>
+                  <button mat-raised-button (click)="mint()" [disabled]="!mintForm.valid">Mint</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+
+          <div class="col-6">
+            <form [formGroup]="burnFromForm">
+              <mat-card class="needConsensus">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('burnFrom')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Burn From</mat-card-title>
+                </mat-card-header>
+                <mat-card-subtitle><em>Only consensus can burn from</em></mat-card-subtitle>
+                <mat-card-content>
+                  <mat-form-field class="address-field">
+                    <input type="text" matInput id="burnFromAddr" placeholder="From Address"
+                      (change)="setBurnFromAddress($event)" formControlName="addr">
+                    <mat-error *ngIf="burnFromForm.invalid">{{approveErrorMsg('addr')}}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input type="text" matInput placeholder="Amount" (change)="setBurnFromAmount($event)"
+                      formControlName="amount">
+                    <mat-error *ngIf="burnFromForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
+                  </mat-form-field>
+                  <button mat-raised-button (click)="burnFrom()" [disabled]="!burnFromForm.valid">Burn From</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+        </div><!-- end row -->
+        <div class="row">
+          <div class="col-6">
+            <form [formGroup]="sellTokenForm">
+              <mat-card class="canCall">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('sellTokens')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Sell Tokens</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input type="text" #sellTokenAmount matInput placeholder="Amount of tokens"
+                      formControlName="amount">
+                    <mat-error *ngIf="sellTokenForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
+                  </mat-form-field>
+                  <button mat-raised-button (click)="sellToken(sellTokenAmount.value)"
+                    [disabled]="!sellTokenForm.valid">Sell</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div> <!-- end col -->
+
+          <div class="col-6">
+            <form [formGroup]="buyTokenForm">
+              <mat-card class="canCall">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('buyTokens')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Buy Tokens</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input type="text" #buyTokenAmount matInput placeholder="Amount to spend (in wei)"
+                      formControlName="amount">
+                    <mat-error *ngIf="buyTokenForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
+                  </mat-form-field>
+                  <button mat-raised-button (click)="buyToken(buyTokenAmount.value)"
+                    [disabled]="!buyTokenForm.valid">Buy</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <form [formGroup]="sanctionForm">
+              <mat-card class="needConsensus">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('sanctionMember')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Sanction Member</mat-card-title>
+                </mat-card-header>
+                <mat-card-subtitle><em>Only consensus can sanction</em></mat-card-subtitle>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input matInput placeholder="Address to Sanction" (change)="setSanctionAddr($event)"
+                      formControlName="addr">
+                  </mat-form-field>
+                  <mat-select name="sanctionState" class="small-mat-select" [(value)]="model.sanctionState"
+                    placeholder="Choose" formControlName="bool">
+                    <mat-option [value]="true">True - Impose Sanction</mat-option>
+                    <mat-option [value]="false">False - Remove Sanction</mat-option>
+                  </mat-select>
+                  <button mat-raised-button color="primary" (click)="sanction()"
+                    [disabled]="!sanctionForm.valid">Execute</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+          <div class="col-6">
+            <mat-card [formGroup]="checkSanctionForm" class="readOnly">
+              <mat-card-header>
+                <button mat-card-avatar mat-icon-button (click)="openDialog('isMemberSanctioned')">
+                  <mat-icon class="iconMargin">info</mat-icon>
+                </button>
+                <mat-card-title>Is Member Sanctioned</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <mat-form-field>
+                  <input type="text" matInput placeholder="Target Address" #checkSanctionAddr formControlName="addr">
+                </mat-form-field>
+                <button mat-raised-button color="primary" (click)="checkSanction(checkSanctionAddr.value)"
+                  [disabled]="!checkSanctionForm.valid" style="margin-right: 10px;">Check Sanction</button>
+                <strong>{{model.isSanctioned}}</strong>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div><!-- end row -->
+        <div class="row">
+          <div class="col-6">
+            <form [formGroup]="allowanceForm">
+              <mat-card class="readOnly">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('checkAllowance')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Check Allowance</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input matInput placeholder="Address granting allowance" #grantAllowanceAddr formControlName="addr">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input matInput placeholder="Address allowed" #allowedAllowanceAddr formControlName="addr">
+                  </mat-form-field>
+                  <button mat-raised-button color="primary"
+                    (click)="checkAllowance(grantAllowanceAddr.value, allowedAllowanceAddr.value)"
+                    [disabled]="!allowanceForm.valid">Check</button>
+                  <strong> {{model.allowanceAmount}}</strong>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+          <div class="col-6">
+
+          </div>
+        </div><!-- end row -->
+        <div class="row">
+          <div class="col-6">
+            <form [formGroup]="transferOwnershipForm">
+              <mat-card>
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('transferOwnershipToken')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Transfer Ownership of Token Contract</mat-card-title>
+                </mat-card-header>
+                <mat-card-subtitle><em>Only consensus can transfer</em></mat-card-subtitle>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input matInput placeholder="New Owner Address" (change)="setTransferOwnership($event)"
+                      formControlName="addr">
+                  </mat-form-field>
+                  <button mat-raised-button color="primary" (click)="transferOwnership()"
+                    [disabled]="!transferOwnershipForm.valid">Transfer</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+          <div class="col-6">
+
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

@@ -1,0 +1,331 @@
+<div class="row">
+  <div class="col-6">
+    <p>Token Contract: <a href="https://ropsten.etherscan.io/address/{{govContract.sharesAddress}}"
+        target="_blank">{{govContract.sharesAddress}}</a></p>
+    <p>Governance Contract: <a href="https://ropsten.etherscan.io/address/{{govContract.address}}"
+        target="_blank">{{govContract.address}}</a></p>
+    <button mat-icon-button (click)="openDialog('quorum-minDebate-numProposal')" style="float:left;">
+      <mat-icon class="iconMargin">info</mat-icon>
+    </button>
+    <p>Quorum: {{govContract.quorum}} | Minutes for Debate: {{govContract.minMinutes}} | Number of Proposals:
+      {{govContract.numProposals}}</p>
+  </div>
+  <div class="col-6">
+    <mat-card class="readOnly">
+      <mat-card-header>
+        <button mat-card-avatar mat-icon-button (click)="openDialog('convertETHtoWei')">
+          <mat-icon class="iconMargin">info</mat-icon>
+        </button>
+        <mat-card-title>Convert ETH to Wei</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field>
+          <input type="text" matInput #conversion placeholder="Amount">
+        </mat-form-field>
+        <button mat-raised-button (click)="getWeiFromETH(conversion.value)">Convert</button>
+        {{model.convert_wei}}
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div><!-- end row -->
+
+<div class="row">
+  <div class="col-12">
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Advanced Governance Functions
+          </mat-panel-title>
+          <mat-panel-description>
+            Change voting rules, Receive Approval
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="row">
+          <div class="col-12">
+            <form [formGroup]="changeVotingForm" style="margin-top: 20px;">
+              <mat-card class="needConsensus">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('changeVotingRules')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Change Voting Rules</mat-card-title>
+                </mat-card-header>
+                <mat-card-subtitle><em>Only consensus can change</em></mat-card-subtitle>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input matInput placeholder="Token address" (change)="setTokenAddr($event)" formControlName="token">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input matInput placeholder="Minimum Quorum" (change)="setQuorum($event)" formControlName="quorum">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input placeholder="Minutes for Debate" matInput (change)="setDebatePeriod($event)"
+                      formControlName="minMinutes">
+                  </mat-form-field>
+                  <button mat-raised-button color="primary" (click)="changeVotingRules()"
+                    [disabled]="!changeVotingForm.valid">Change</button>
+                  <br><small>Ensure that <em>Token Address</em> remains as
+                    <strong>{{govContract.sharesAddress}}</strong></small>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+        </div><!-- end row -->
+        <div class="row">
+          <div class="col-12">
+            <form [formGroup]="receiveApprovalForm">
+              <mat-card class="needConsensus">
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('receiveApproval')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Receive Approval</mat-card-title>
+                </mat-card-header>
+                <mat-card-subtitle><em>Only consensus can call</em></mat-card-subtitle>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input matInput placeholder="From address" formControlName="addr">
+                    <mat-error *ngIf="receiveApprovalForm.invalid">{{receiveApprovalErrorMsg('addr')}}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input matInput placeholder="Amount" (change)="setAmount($event)" formControlName="amount">
+                    <mat-error *ngIf="receiveApprovalForm.invalid">{{receiveApprovalErrorMsg('amount')}}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input placeholder="Token address" matInput formControlName="token">
+                    <mat-error *ngIf="receiveApprovalForm.invalid">{{receiveApprovalErrorMsg('token')}}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <input matInput placeholder="Data" (change)="setData($event)" formControlName="data">
+                    <mat-error *ngIf="receiveApprovalForm.invalid">{{receiveApprovalErrorMsg('data')}}</mat-error>
+                  </mat-form-field>
+                  <button mat-raised-button color="primary" (click)="receiveApproval()"
+                    [disabled]="!receiveApprovalForm.valid">Receive Approval</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+        </div><!-- end row -->
+        <div class="row">
+          <div class="col-6">
+            <form [formGroup]="transferOwnershipForm">
+              <mat-card>
+                <mat-card-header>
+                  <button mat-card-avatar mat-icon-button (click)="openDialog('transferOwnershipDUN')">
+                    <mat-icon class="iconMargin">info</mat-icon>
+                  </button>
+                  <mat-card-title>Transfer Ownership of Decentralized UN</mat-card-title>
+                </mat-card-header>
+                <mat-card-subtitle><em>Only consensus can transfer</em></mat-card-subtitle>
+                <mat-card-content>
+                  <mat-form-field>
+                    <input matInput placeholder="New Owner Address" (change)="setTransferOwnership($event)"
+                      formControlName="addr">
+                  </mat-form-field>
+                  <button mat-raised-button color="primary" (click)="transferOwnership()"
+                    [disabled]="!transferOwnershipForm.valid">Transfer</button>
+                </mat-card-content>
+              </mat-card>
+            </form>
+          </div>
+          <div class="col-6">
+            <mat-card>
+              <mat-card-header>
+                <button mat-card-avatar mat-icon-button (click)="openDialog('dissolveDUN')">
+                  <mat-icon class="iconMargin">info</mat-icon>
+                </button>
+                <mat-card-title>Dissolve Decentralized UN</mat-card-title>
+              </mat-card-header>
+              <mat-card-subtitle><em>Only consensus can dissolve</em></mat-card-subtitle>
+              <mat-card-content>
+                <button mat-raised-button color="primary" (click)="dissolve()">Dissolve</button>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div><!-- end row -->
+
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div><!-- end row -->
+<div class="row">
+  <div class="col-7">
+
+    <form [formGroup]="newProposalForm">
+      <mat-card class="canCall">
+        <mat-card-header>
+          <button mat-card-avatar mat-icon-button (click)="openDialog('newProposal')">
+            <mat-icon class="iconMargin">info</mat-icon>
+          </button>
+          <mat-card-title>New Proposal</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field>
+            <input matInput id="amount" placeholder="Amount (in wei)" (change)="setAmount($event)"
+              formControlName="amount">
+            <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('amount')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput id="beneficiary" placeholder="Recipient Address" (change)="setBeneficiary($event)"
+              formControlName="addr">
+            <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('addr')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput id="justification" placeholder="Description" (change)="setJustification($event)"
+              formControlName="desc">
+            <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('desc')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput id="data" placeholder="Data" (change)="setData($event)" formControlName="data">
+            <mat-error *ngIf="newProposalForm.invalid">{{newProposalErrorMsg('data')}}</mat-error>
+          </mat-form-field>
+          <button mat-raised-button id="newProposalInEther" (click)="newProposal()"
+            [disabled]="!newProposalForm.valid">Make Proposal</button>
+        </mat-card-content>
+      </mat-card>
+    </form>
+  </div>
+  <div class="col-5">
+    <p>If you are not using the <em>Data</em> parameter, put <strong>0x</strong><br>
+      If you are using the <em>Data</em> parameter, the <em>Recipient</em> will be:</p>
+    <ul>
+      <li><strong>{{govContract.sharesAddress}}</strong> if calling a Token function</li>
+      <li><strong>{{govContract.address}}</strong> if calling a Governance function</li>
+    </ul>
+  </div>
+</div> <!-- end row -->
+
+<div class="row">
+  <div class="col-6">
+    <mat-card class="readOnly">
+      <mat-card-header>
+        <button mat-card-avatar mat-icon-button (click)="openDialog('getProposalDetails')">
+          <mat-icon class="iconMargin">info</mat-icon>
+        </button>
+        <mat-card-title>Get Proposal Details</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field>
+          <input type="number" matInput #proposalNum placeholder="Proposal number">
+        </mat-form-field>
+        <button mat-raised-button id="getProposalButton" (click)="getProposal(proposalNum.value)">Go</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="col-6">
+    <p [hidden]="!proposal.beneficiary"><strong>Recipient:</strong> {{proposal.beneficiary}} |
+      <strong>Amount:</strong> {{proposal.amount}} wei | <strong>Description:</strong> {{proposal.desc}} |
+      <strong>Min Execution Date:</strong> {{proposal.minExecutionDate}} | <strong>Executed:</strong>
+      {{proposal.executed}} | <strong>Proposal passed:</strong> {{proposal.proposalPassed}} | <strong>Number of
+        votes:</strong> {{proposal.numberOfVotes}} | <strong>Proposal hash:</strong> {{proposal.proposalHash}}</p>
+  </div>
+</div> <!-- end row -->
+
+<div class="row">
+  <div class="col-6">
+    <mat-card [formGroup]="checkProposalForm" class="readOnly">
+      <mat-card-header>
+        <button mat-card-avatar mat-icon-button (click)="openDialog('checkProposalCode')">
+          <mat-icon class="iconMargin">info</mat-icon>
+        </button>
+        <mat-card-title>Check Proposal Code</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field>
+          <input type="text" matInput placeholder="Proposal Number" (change)="setProposalNumber($event)"
+            formControlName="number">
+          <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('number')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input type="text" matInput placeholder="Recipient Address" (change)="setBeneficiary($event)"
+            formControlName="addr">
+          <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('addr')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input type="text" matInput placeholder="Amount (in wei)" (change)="setAmount($event)"
+            formControlName="amount">
+          <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('amount')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input type="text" matInput placeholder="Data" (change)="setData($event)" formControlName="data">
+          <mat-error *ngIf="checkProposalForm.invalid">{{checkProposalErrorMsg('data')}}</mat-error>
+        </mat-form-field>
+        <button mat-raised-button (click)="checkProposalCode()" [disabled]="!checkProposalForm.valid"
+          style="margin-right: 10px;">Check Code</button>
+        <strong>{{model.checkProp}}</strong>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="col-6">
+    <mat-card class="readOnly" [formGroup]="checkRepForm">
+      <mat-card-header>
+        <button mat-card-avatar mat-icon-button (click)="openDialog('getReputation')">
+          <mat-icon class="iconMargin">info</mat-icon>
+        </button>
+        <mat-card-title>Check Reputation</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field id="rep-selector" class="address-field">
+            <mat-select name="participant" [(ngModel)]="selectedParticipant"
+              placeholder="Address" formControlName="addr">
+              <mat-option *ngFor="let p of model.participants" [value]="p">{{p}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="checkRepForm.invalid">{{checkRepErrorMsg('addr')}}</mat-error>
+          </mat-form-field>
+        <button mat-raised-button [disabled]="!checkRepForm.valid" (click)="checkReputation(selectedParticipant)">Go</button>
+        <span *ngIf="model.reputation != null"><strong>Reputation:</strong> {{model.reputation}} | <strong>DUN:</strong> {{model.DUNbalance}} | 
+            <strong>ETH:</strong> {{model.participantETHBalance}}
+        </span>
+    </mat-card-content>
+    </mat-card>
+  </div>
+</div> <!-- end row -->
+<div class="row">
+  <div class="col-6">
+    <mat-card [formGroup]="voteForm" class="canCall">
+      <mat-card-header>
+        <button mat-card-avatar mat-icon-button (click)="openDialog('vote')">
+          <mat-icon class="iconMargin">info</mat-icon>
+        </button>
+        <mat-card-title>Vote</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field>
+          <input type="text" matInput placeholder="Proposal Number" (change)="setProposalNumber($event)"
+            formControlName="number">
+          <mat-error *ngIf="voteForm.invalid">{{voteErrorMsg('number')}}</mat-error>
+        </mat-form-field>
+        <mat-select name="vote" class="small-mat-select" [(value)]="model.vote" placeholder="Cast Vote"
+          formControlName="bool">
+          <mat-option [value]="true">True - Yes - Agree</mat-option>
+          <mat-option [value]="false">False - No - Disagree</mat-option>
+        </mat-select>
+        <button mat-raised-button (click)="vote()" [disabled]="!voteForm.valid">Vote</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="col-6">
+    <mat-card [formGroup]="executeProposalForm" class="canCall">
+      <mat-card-header>
+        <button mat-card-avatar mat-icon-button (click)="openDialog('executeProposal')">
+          <mat-icon class="iconMargin">info</mat-icon>
+        </button>
+        <mat-card-title>Execute Proposal</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field>
+          <input type="text" matInput placeholder="Proposal Number" (change)="setProposalNumber($event)"
+            formControlName="number">
+          <mat-error *ngIf="executeProposalForm.invalid">{{executeProposalErrorMsg('number')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input type="text" matInput placeholder="Data" (change)="setData($event)" formControlName="data">
+          <mat-error *ngIf="executeProposalForm.invalid">{{executeProposalErrorMsg('data')}}</mat-error>
+        </mat-form-field>
+        <button mat-raised-button (click)="executeProposal()" [disabled]="!executeProposalForm.valid">Execute</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> <!-- end row -->

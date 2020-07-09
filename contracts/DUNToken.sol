@@ -1,5 +1,4 @@
-pragma solidity ^0.5.0;
-//pragma solidity >=0.4.22 <0.6.0;
+pragma solidity ^0.6.0;
 
 contract owned {
     address public owner;
@@ -13,7 +12,7 @@ contract owned {
         _;
     }
 
-    function transferOwnership(address newOwner) onlyOwner public {
+    function transferOwnership(address newOwner) public onlyOwner {
         owner = newOwner;
     }
 }
@@ -60,13 +59,10 @@ contract TokenERC20 {
     /**
      * Internal transfer, only can be called by this contract
      */
-    function _transfer(address _from, address _to, uint _value) internal {
-        // Prevent transfer to 0x0 address. Use burn() instead
-        require(_to != address(0x0));
-        // Check if the sender has enough
-        require(balanceOf[_from] >= _value);
-        // Check for overflows
-        require(balanceOf[_to] + _value > balanceOf[_to]);
+    function _transfer(address _from, address _to, uint _value) internal virtual {
+        require(_to != address(0x0), "Addr must not be 0x0");
+        require(balanceOf[_from] >= _value, "Insufficient balance");
+        require(balanceOf[_to] + _value > balanceOf[_to], "Check for overflows");
         // Save this for an assertion in the future
         uint previousBalances = balanceOf[_from] + balanceOf[_to];
         // Subtract from the sender
@@ -101,7 +97,7 @@ contract TokenERC20 {
      * @param _value the amount to send
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value <= allowance[_from][msg.sender]);     // Check allowance
+        require(_value <= allowance[_from][msg.sender], "Check allowance");
         allowance[_from][msg.sender] -= _value;
         _transfer(_from, _to, _value);
         return true;
@@ -149,7 +145,7 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burn(uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
+        require(balanceOf[msg.sender] >= _value, "Insufficient balance");
         balanceOf[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
         emit Burn(msg.sender, _value);
@@ -165,11 +161,11 @@ contract TokenERC20 {
      * @param _value the amount of money to burn
      */
     function burnFrom(address _from, uint256 _value) public returns (bool success) {
-        require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
-        require(_value <= allowance[_from][msg.sender]);    // Check allowance
-        balanceOf[_from] -= _value;                         // Subtract from the targeted balance
-        allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
-        totalSupply -= _value;                              // Update totalSupply
+        require(balanceOf[_from] >= _value, "Targeted balance is not enough");
+        require(_value <= allowance[_from][msg.sender], "Insufficient allowance");
+        balanceOf[_from] -= _value;
+        allowance[_from][msg.sender] -= _value;
+        totalSupply -= _value;
         emit Burn(_from, _value);
         return true;
     }
@@ -179,7 +175,7 @@ contract TokenERC20 {
 /*       ADVANCED TOKEN STARTS HERE       */
 /******************************************/
 
-contract AdvancedToken is owned, TokenERC20 {
+contract DUNToken is owned, TokenERC20 {
 
     uint256 public sellPrice;
     uint256 public buyPrice;
@@ -198,26 +194,26 @@ contract AdvancedToken is owned, TokenERC20 {
         string memory tokenSymbol
     ) TokenERC20(initialSupply, tokenName, tokenSymbol) public {}
 
-    function() external payable { 
+    receive() external payable {
         emit EtherReceived(msg.value);
     }
 
     /* Internal transfer, only can be called by this contract */
-    function _transfer(address _from, address _to, uint _value) internal {
-        require (_to != address(0x0));                          // Prevent transfer to 0x0 address. Use burn() instead
-        require (balanceOf[_from] >= _value);                   // Check if the sender has enough
-        require (balanceOf[_to] + _value >= balanceOf[_to]);    // Check for overflows
-        require(!frozenAccount[_from]);                         // Check if sender is frozen
-        require(!frozenAccount[_to]);                           // Check if recipient is frozen
-        balanceOf[_from] -= _value;                             // Subtract from the sender
-        balanceOf[_to] += _value;                               // Add the same to the recipient
+    function _transfer(address _from, address _to, uint _value) internal override {
+        require (_to != address(0x0), "Must not be 0x0 addr");
+        require (balanceOf[_from] >= _value, "Insufficient balance");
+        require (balanceOf[_to] + _value >= balanceOf[_to], "Check fo overflows");
+        require(!frozenAccount[_from], "Sender must not be frozen");
+        require(!frozenAccount[_to], "Recipient must not be frozen");
+        balanceOf[_from] -= _value;
+        balanceOf[_to] += _value;
         emit Transfer(_from, _to, _value);
     }
 
     /// @notice Create `mintedAmount` tokens and send it to `target`
     /// @param target Address to receive the tokens
     /// @param mintedAmount the amount of tokens it will receive
-    function mintToken(address target, uint256 mintedAmount) onlyOwner public {
+    function mintToken(address target, uint256 mintedAmount) public onlyOwner {
         balanceOf[target] += mintedAmount;
         totalSupply += mintedAmount;
         emit Transfer(address(0), address(this), mintedAmount);
@@ -227,7 +223,7 @@ contract AdvancedToken is owned, TokenERC20 {
     /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
     /// @param target Address to be frozen
     /// @param freeze either to freeze it or not
-    function freezeAccount(address target, bool freeze) onlyOwner public {
+    function freezeAccount(address target, bool freeze) public onlyOwner {
         frozenAccount[target] = freeze;
         emit FrozenFunds(target, freeze);
     }
@@ -235,18 +231,18 @@ contract AdvancedToken is owned, TokenERC20 {
     /// @notice Allow users to buy tokens for `newBuyPrice` eth and sell tokens for `newSellPrice` eth
     /// @param newSellPrice Price the users can sell to the contract
     /// @param newBuyPrice Price users can buy from the contract
-    function setPrices(uint256 newSellPrice, uint256 newBuyPrice) onlyOwner public {
+    function setPrices(uint256 newSellPrice, uint256 newBuyPrice) public onlyOwner {
         sellPrice = newSellPrice;
         buyPrice = newBuyPrice;
     }
 
     /// @notice Allow the buying and selling of the token
-    function allowBuySell() onlyOwner public {
+    function allowBuySell() public onlyOwner {
         buySellAllowed = !buySellAllowed;
-    }   
+    }
 
     /// @notice Buy tokens from contract by sending ether
-    function buy() payable public {
+    function buy() public payable {
         require(buySellAllowed, "Buy/sell not yet allowed");
         uint amount = msg.value / buyPrice;                 // calculates the amount
         _transfer(address(this), msg.sender, amount);       // makes the transfers

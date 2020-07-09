@@ -3,7 +3,7 @@ import {MatDialog} from '@angular/material';
 import { DialogComponent } from '../util/dialog.component';
 
 declare let require: any;
-const dialog_data = require('./info.json');
+const dialog_data = require('../governance/info.json');
 
 @Component({
   selector: 'app-help',

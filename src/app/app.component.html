@@ -1,11 +1,14 @@
 <mat-toolbar color="primary">
-    Decentralized Governance
-    <span class="example-spacer"></span>
-    <a mat-icon-button href="https://github.com/fuguefoundation/dapp-dun" target="_blank" title="Github">
-        <mat-icon class="example-icon">share</mat-icon>
-    </a> 
+  Decentralized Governance
+  <span class="example-spacer"></span>
+  <button mat-card-avatar mat-icon-button (click)="onboardMetamask()">
+    <mat-icon class="example-icon">cast</mat-icon>
+  </button>
+  <a mat-icon-button href="https://github.com/fugueweb/dapp-dun" target="_blank" title="Github">
+    <mat-icon class="example-icon">share</mat-icon>
+  </a>
 </mat-toolbar>
 <app-token></app-token>
-<app-association></app-association>
+<app-governance></app-governance>
 <app-help></app-help>
 <app-tx></app-tx>

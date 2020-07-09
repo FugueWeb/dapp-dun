@@ -1,11 +1,11 @@
 //const TokenERC20 = artifacts.require('./TokenERC20.sol');
-const AdvancedToken = artifacts.require('./AdvancedToken.sol');
+const DUNToken = artifacts.require('./DUNToken.sol');
 
 module.exports = async (deployer, network) => {
 
     console.log(`${"-".repeat(30)}
-    DEPLOYING AdvancedToken Contract...\n
+    DEPLOYING DUNToken Contract...\n
     Using ` + network + ` network\n`);
 
-    deployer.deploy(AdvancedToken, 200, "DiploCoin", "DUN");
+    deployer.deploy(DUNToken, 200, "DiploCoin", "DUN");
 };

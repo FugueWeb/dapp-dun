@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { AssociationTokenModule } from './association/association-token.module';
+import { GovernanceTokenModule } from './governance/governance-token.module';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
@@ -26,7 +26,7 @@ import {
     BrowserModule,
     //FormsModule,
     //HttpClientModule,
-    AssociationTokenModule
+    GovernanceTokenModule
   ],
   providers: [],
   bootstrap: [AppComponent]

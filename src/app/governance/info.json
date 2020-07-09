@@ -98,5 +98,9 @@
     {
         "id": "checkAllowance",
         "desc": "Confirm the amount of DUN tokens that a given address was approved to manage on behalf of another address. The `allowed` address is most likely the address of the governance contract, since allowing the DUN to manage at least one token is a requirement for membership."
+    },
+    {
+        "id": "getReputation",
+        "desc": "Check the 'reputation' of a participant at a given address. In decentralized systems, the idea of reputation is quite different because the way one adds value to the system itself is not centrally managed or determined by a third party. Here we have three metrics. The first is measured by a 'non-fungible token' (ERC721), which a member state receives every time it successfully passes a proposal. The other two metrics are the current DUN token balance and ETH balance. As discussed elsewhere, the DUN tokens determine relative power within this environment, and the amount of ETH tokens essentially represents a type of global wealth."
     }
 ]

@@ -1,9 +1,9 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {AssociationComponent} from './association.component';
-import {TokenERC20Component} from './tokenERC20.component';
-import {HelpComponent} from './help.component';
-import {TransactionComponent} from './transaction.component';
+import {GovernanceComponent} from './governance.component';
+import {TokenERC20Component} from '../token/tokenERC20.component';
+import {HelpComponent} from '../help/help.component';
+import {TransactionComponent} from '../tx/transaction.component';
 import {DialogComponent} from '../util/dialog.component';
 import {UtilModule} from '../util/util.module';
 import {RouterModule} from '@angular/router';
@@ -38,9 +38,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     RouterModule,
     UtilModule
   ],
-  declarations: [AssociationComponent, TokenERC20Component, HelpComponent, TransactionComponent, DialogComponent],
-  exports: [AssociationComponent, TokenERC20Component, HelpComponent, TransactionComponent],
+  declarations: [GovernanceComponent, TokenERC20Component, HelpComponent, TransactionComponent, DialogComponent],
+  exports: [GovernanceComponent, TokenERC20Component, HelpComponent, TransactionComponent],
   entryComponents: [DialogComponent]
 })
-export class AssociationTokenModule {
+export class GovernanceTokenModule {
 }

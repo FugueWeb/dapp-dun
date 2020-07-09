@@ -1,7 +1,8 @@
 {
   "name": "decentralized-united-nations",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "license": "MIT",
+  "description": "Training dapp for smart contract based governance and tokens",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -24,11 +25,15 @@
     "@angular/platform-browser-dynamic": "8.2.0",
     "@angular/platform-server": "8.2.0",
     "@angular/router": "8.2.0",
+    "@metamask/onboarding": "^1.0.0",
+    "@openzeppelin/contracts": "^3.0.2",
+    "@truffle/contract": "^4.0.33",
+    "@truffle/hdwallet-provider": "^1.0.35",
     "core-js": "2.5.7",
+    "dotenv": "^8.2.0",
     "ethers": "^4.0.37",
     "node-sass": "4.12.0",
     "rxjs": "^6.5.3",
-    "@truffle/contract": "^4.0.33",
     "tslib": "^1.10.0",
     "web3": "1.2.1",
     "zone.js": "0.9.1"
