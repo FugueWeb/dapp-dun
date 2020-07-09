@@ -65,7 +65,7 @@ Some of the key details that determine the governance model are:
 
 # Feedback and Trouble shooting 
 
-[Change Log]() and [Contributing]() guidelines
+[Change Log](https://github.com/FugueWeb/dapp-dun/blob/master/.github/CHANGELOG.md) and [Contributing](https://github.com/FugueWeb/dapp-dun/blob/master/.github/CONTRIBUTING.md) guidelines
 
 This is an open source project. Please post any comments - technical, political, or otherwise - by creating or responding to an issue. That way we can properly track and discuss it. Likewise, if you make new proposals or vote on existing ones, feel free to put comments there too to alert others (though this information is available publicly on the blockchain).
 
@@ -81,8 +81,4 @@ This is an open source project. Please post any comments - technical, political,
 * Angular 8
 * Solidity
 * Metamask
-
-# References
-
-* https://ethereum.org/token
-* https://ethereum.org/dao 
+* Ethereum
