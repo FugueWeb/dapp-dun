@@ -6,15 +6,17 @@
 
 Install [Metamask](https://metamask.io/) in Chrome, Firefox, or [Brave browser](https://brave.com/) and then enable the extension. You must use a computer or laptop (no mobile configuration yet).
 
-Backup your 12-word seed (copy it somewhere safe) and request test ether for the Ropsten network. Good, quick [instructions here](https://blog.bankex.org/how-to-buy-ethereum-using-metamask-ccea0703daec) for how to do this. 
+Backup your 12-word seed (copy it somewhere safe) and request test ether for the Ropsten network. Good, quick [instructions here](https://blog.bankex.org/how-to-buy-ethereum-using-metamask-ccea0703daec) for how to do this.
+
+On the dapp page, click the icon (top right) to connect your Metamask wallet.
 
 ## Join the Decentralized UN
 
-This dApp consists of two smart contracts: one for Governance and one for Token economics. The token created by contract [DUNToken.sol](https://ropsten.etherscan.io/address/0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D) is what affords membership to the Decentralized United Nations (d-UN). Moreover, the amount of tokens you have determines the weight of your vote toward a given proposal. There are two options for you to get these stakeholder tokens.
+This dApp consists of two smart contracts: one for Governance and one for Token economics. The token created by contract [DUNToken.sol](https://ropsten.etherscan.io/address/0x034b62Abcd077de0FF079EEbb4598FF6dB0cE6Ea) is what affords membership to the Decentralized United Nations (d-UN). Moreover, the amount of tokens you have determines the weight of your vote toward a given proposal. There are two options for you to get these stakeholder tokens.
 
 1. For those who want an interactive experience, to propose new governance models, get help with troubleshooting, and contribute to the knowledgement management of this project, login to Github (go here to [create an account](https://github.com/join)) and post your Metamask account address [in this Issue](https://github.com/fuguefoundation/dapp-dun/issues/1) within this repository.
 
-2. Using Metamask, send a small amount of Ropsten test ether (e.g., 0.1 ETH) to `0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D` and I will send you one DUN token. This method preserves your privacy. You are always free to then login to Github and join the conversation.
+2. Using Metamask, send a small amount of Ropsten test ether (e.g., 0.1 ETH) to the [Governance Contract](https://ropsten.etherscan.io/address/0x65757C9A900f19A7d8949Ce323Aa18c29C26204b) and I will send you some DUN tokens. This method preserves your privacy. You are always free to then login to Github and join the conversation.
 
 To know whether you have received your tokens, open Metamask, click the menu bar (top left), then click 'Add Token' at the bottom. Choose 'Custom Token' and paste in the Token address shown on the dApp webpage. The symbol is DUN and the decimal is 18. When you open the menu again, you should see your current balance. The dApp also displays your token balance.
 
@@ -29,7 +31,7 @@ Some of the key details that determine the governance model are:
 
 **Checklist - Ensure that you are:** 
 * on the [dApp webpage](https://fugueweb.com/dev/dun)
-* logged in to Metamask
+* logged in to Metamask and connected with the site
 * using the Ropsten network
 * have test ether
 * have a token balance greater than 0
@@ -69,7 +71,7 @@ Some of the key details that determine the governance model are:
 * Run a local blockchain, I suggest [Ganache](https://www.trufflesuite.com/docs/ganache/overview)
 * `truffle test --network ganache`
 
-## Feedback and Trouble shooting 
+## Trouble Shooting 
 
 [Change Log](https://github.com/FugueWeb/dapp-dun/blob/master/.github/CHANGELOG.md) and [Contributing](https://github.com/FugueWeb/dapp-dun/blob/master/.github/CONTRIBUTING.md) guidelines
 

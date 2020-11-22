@@ -104,7 +104,7 @@ contract("Governance", async (accounts) => {
     });
     await sleep(2000); //wait to ensure proposal can be executed
 
-    _execute = await _G.executeProposal(_propNumber, _bytecode, {
+    let = _execute = await _G.executeProposal(_propNumber, _bytecode, {
       from: accounts[0]
     }).then(execute => {
       return execute;

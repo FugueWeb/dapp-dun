@@ -7,3 +7,8 @@
 * Refactored front end code to incorporate more object models
 * Updated smart contracts to Solidity 0.6
 * Helpful feedback, instructions, and improvements to UX
+
+## 20201121
+
+* New addresses added to README
+* Minor edits, changes to naming convention
