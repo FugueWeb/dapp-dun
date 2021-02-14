@@ -1,5 +1,10 @@
 # Change Log: Decentralized UN
 
+## 20210214
+
+* convert from `https` to `ssh` repo
+* Security alert - "node-sass": ">=4.13.1"
+
 ## Version 2.0.0
 * Incorporated [onboarding](https://docs.metamask.io/guide/onboarding-library.html#getting-started) for Metamask 8.0. Now users simply click a single button to set connection permissions for Metamask to interact with the dapp.
 * NFT ERC721 introduced! Whenever a proposal is successfully passed, the participant who proposed it receives and NFT token. This signals a type of reputation or commemoration within the dapp. There is a single function that includes a list of all participants in the DUN, making it easy for other participants to see the reputation of others with a single click.

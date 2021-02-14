@@ -35,6 +35,7 @@ testem.log
 /misc
 /constants
 app.env
+/src/assets/participants.json
 .env
 
 # e2e
