@@ -11,7 +11,7 @@ export class AppComponent {
   constructor(private web3Service: Web3Service) {
   }
 
-  onboardMetamask(){
-      this.web3Service.onboardMetamask();
+  onboard(){
+      this.web3Service.blockNativeOnboard();
   }
 }

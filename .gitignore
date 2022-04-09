@@ -37,6 +37,8 @@ testem.log
 app.env
 /src/assets/participants.json
 .env
+/src/environments/environment.ts
+/src/environments/environment.prod.ts
 
 # e2e
 /e2e/*.js

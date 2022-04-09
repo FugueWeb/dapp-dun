@@ -1,7 +1,15 @@
 import {Injectable} from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import MetaMaskOnboarding from '@metamask/onboarding';
-//import * as contract from 'truffle-contract';
+//import MetaMaskOnboarding from '@metamask/onboarding';
+import Onboard from '@web3-onboard/core'
+import injectedModule from '@web3-onboard/injected-wallets'
+import Notify from "bnc-notify"
+
+const MAINNET_RPC_URL = 'https://mainnet.infura.io/v3/<INFURA_KEY>'
+
+const injected = injectedModule()
+import { environment } from 'src/environments/environment';
+
 const contract = require('@truffle/contract');
 import {Subject} from 'rxjs';
 declare let window: any;
@@ -15,12 +23,13 @@ export class Web3Service {
   public ready = false;
   public accountsObservable = new Subject < string[] > ();
   public updateContractObservable = new Subject < any > ();
-  private onboarding: any;
+  //private onboarding: any;
 
   constructor(private matSnackBar: MatSnackBar) {
     window.addEventListener('load', (event) => {
       this.bootstrapWeb3();
-      this.onboarding = new MetaMaskOnboarding();
+      this.blockNativeOnboard();
+      //this.onboarding = new MetaMaskOnboarding();
     });
   }
 
@@ -41,7 +50,7 @@ export class Web3Service {
       this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     }
     this.checkNetwork();
-    setInterval(() => this.refreshAccounts(), 5000);
+    setInterval(() => this.refreshAccounts(), 10000);
   }
 
   public async artifactsToContract(artifacts) {
@@ -83,19 +92,19 @@ export class Web3Service {
     }
   }
 
-  public async onboardMetamask() {
-    if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
-      //onboardButton.disabled = true;
-      this.onboarding.startOnboarding();
-    } else if (this.accounts && this.accounts.length > 0) {
-      //onboardButton.disabled = true;
-      this.onboarding.stopOnboarding();
-    } else {
-      await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-    };
-  }
+//   public async onboardMetamask() {
+//     if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
+//       //onboardButton.disabled = true;
+//       this.onboarding.startOnboarding();
+//     } else if (this.accounts && this.accounts.length > 0) {
+//       //onboardButton.disabled = true;
+//       this.onboarding.stopOnboarding();
+//     } else {
+//       await window.ethereum.request({
+//         method: 'eth_requestAccounts',
+//       });
+//     };
+//   }
 
   private refreshAccounts() {
     this.web3.eth.getAccounts((err, accs) => {
@@ -120,6 +129,34 @@ export class Web3Service {
 
       this.ready = true;
     });
+  }
+
+  public async blockNativeOnboard() {
+    const onboard = Onboard({
+        wallets: [injected],
+        chains: [
+          {
+            id: '0x3',
+            token: 'tROP',
+            label: 'Ethereum Ropsten Testnet',
+            rpcUrl: 'https://ropsten.infura.io/v3/' + environment.INFURA_ID
+          }
+        ],
+        appMetadata: {
+          name: 'd-UN',
+          icon: '<SVG_ICON_STRING>',
+          logo: '<SVG_LOGO_STRING>',
+          description: 'Decentralized governance and economic model',
+          recommendedInjectedWallets: [ 
+            { name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
+            { name: 'MetaMask', url: 'https://metamask.io' }
+          ]
+        }
+      })
+      
+      const wallets = await onboard.connectWallet()
+      
+      console.log(wallets)      
   }
 
   private setStatus(status) {
