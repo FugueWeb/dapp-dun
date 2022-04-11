@@ -35,10 +35,11 @@ testem.log
 /misc
 /constants
 app.env
-/src/assets/participants.json
+/src/app/models/participants.json
 .env
 /src/environments/environment.ts
 /src/environments/environment.prod.ts
+notes.md
 
 # e2e
 /e2e/*.js
@@ -48,3 +49,5 @@ app.env
 .DS_Store
 Thumbs.db
 /package-lock.json
+.angular
+.vscode

@@ -1,5 +1,13 @@
 # Change Log: Decentralized UN
 
+## 20220411
+
+* Version 3.0
+* Update to Angular 13
+* Improvements to Block Native integration
+* Code refactoring
+* Copy to clipboard feature
+
 ## 20220328
 
 * Blocknative integration

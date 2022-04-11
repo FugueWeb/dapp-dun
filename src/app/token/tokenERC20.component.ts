@@ -1,14 +1,15 @@
 import {Component, OnInit} from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
 import {Validators, FormGroup, FormBuilder} from '@angular/forms';
 import {Web3Service} from '../util/web3.service';
 import {TxService} from '../util/transaction.service';
-import { MatSnackBar } from '@angular/material';
-import {MatDialog} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../util/dialog.component';
 import { Token } from '../models/token';
 
 declare let require: any;
-declare let window: any;
+//declare let window: any;
 const token_artifacts = require('../../../build/contracts/DUNToken.json');
 const dialog_data = require('../governance/info.json');
 
@@ -36,16 +37,13 @@ export class TokenERC20Component implements OnInit {
   model: Token = new Token();
 
   constructor(private web3Service: Web3Service, private matSnackBar: MatSnackBar,
-    private txService: TxService, private fb: FormBuilder, private dialog: MatDialog) {
+    private txService: TxService, private fb: FormBuilder, private dialog: MatDialog,
+    private clipboard: Clipboard) {
     console.log('Constructor: ' + web3Service);
   }
 
   ngOnInit(): void {
     this.watchContract();
-    this.web3Service.artifactsToContract(token_artifacts)
-      .then((TokenAbstraction) => {
-        this.TokenERC20 = TokenAbstraction;
-      });
     this.createFormGroups();
   }
 
@@ -53,18 +51,22 @@ export class TokenERC20Component implements OnInit {
     this.web3Service.accountsObservable.subscribe((accounts) => {
       this.accounts = accounts;
       this.model.account = accounts[0];
-      //setInterval(() => this.refreshBalance(), 10000);
-      this.refreshBalance();
+      //Called after BN sets web3 provider so that Truffle can create contract abstracts
+      this.web3Service.providerObservable.subscribe(() => {
+        this.web3Service.artifactsToContract(token_artifacts)
+            .then((TokenAbstraction) => {
+            this.TokenERC20 = TokenAbstraction;
+            this.refreshBalance(accounts);
+        });        
+      });
     });
-    this.web3Service.updateContractObservable.subscribe(() =>{
-        this.refreshBalance();
-    })
   }
 
-  async refreshBalance() {
+  async refreshBalance(accounts) {
+      console.log(accounts);
     try {
       const deployedTokenERC20 = await this.TokenERC20.deployed();
-      this.model.balance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(this.model.account));
+      this.model.balance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(accounts[0]));
       this.model.dunTokensBalance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(deployedTokenERC20.address));
       this.model.totalSupply = this.web3Service.convertWeitoETH(await deployedTokenERC20.totalSupply.call());
       this.model.sellPrice = this.web3Service.convertWeitoETH(await deployedTokenERC20.sellPrice.call());
@@ -239,7 +241,7 @@ export class TokenERC20Component implements OnInit {
       console.log(e);
       this.setStatus('Error sending coin; see log.');
     }
-    this.refreshBalance();
+    this.refreshBalance(this.model.account);
   }
 
   async approve() {
@@ -314,7 +316,7 @@ export class TokenERC20Component implements OnInit {
       console.log(e);
       this.setStatus('Error minting; see log.');
     }
-    this.refreshBalance();
+    this.refreshBalance(this.model.account);
   }
 
   async setPrices() {
@@ -340,7 +342,7 @@ export class TokenERC20Component implements OnInit {
       console.log(e);
       this.setStatus('Error setting prices; see log.');
     }
-    this.refreshBalance();
+    this.refreshBalance(this.model.account);
   }
 
   async allowBuySell() {
@@ -362,7 +364,7 @@ export class TokenERC20Component implements OnInit {
       console.log(e);
       this.setStatus('Error allowing/denying buy/sell; see log.');
     }
-    this.refreshBalance();
+    this.refreshBalance(this.model.account);
   }
 
   async sellToken(amount) {
@@ -385,7 +387,7 @@ export class TokenERC20Component implements OnInit {
       console.log(e);
       this.setStatus('Error selling; see log.');
     }
-    this.refreshBalance();
+    this.refreshBalance(this.model.account);
   }
 
   async buyToken(value) {
@@ -409,7 +411,7 @@ export class TokenERC20Component implements OnInit {
       console.log(e);
       this.setStatus('Error buying; see log.');
     }
-    this.refreshBalance();
+    this.refreshBalance(this.model.account);
   }
 
   async checkAllowance(addr1, addr2) {
@@ -491,7 +493,7 @@ export class TokenERC20Component implements OnInit {
       console.log(e);
       this.setStatus('Error burning from; see log.');
     }
-    this.refreshBalance();
+    this.refreshBalance(this.model.account);
   }
 
   /************* HELPER FUNCTIONS *************/
@@ -529,5 +531,10 @@ export class TokenERC20Component implements OnInit {
         desc: choice.desc
       }
     });
+  }
+
+  copyText(textToCopy: string) {
+    this.clipboard.copy(textToCopy);
+    this.setStatus('Copied to clipboard')
   }
 }

@@ -5,39 +5,42 @@
         <button mat-card-avatar mat-icon-button (click)="openDialog('balance')">
           <mat-icon class="iconMargin">info</mat-icon>
         </button>
-        <mat-card-title>Balance</mat-card-title>
+        <mat-card-title>Wallet</mat-card-title>
       </mat-card-header>
       <mat-card-content>
+        <button mat-card-avatar mat-icon-button title="Copy address" (click)="copyText(model.account)">
+            <mat-icon class="iconMargin">content_copy</mat-icon>
+        </button>  
         <mat-form-field id="address-selector" class="address-field">
-          <mat-select name="account" (selectionChange)="refreshBalance()" [(value)]="model.account"
+          <mat-select name="account" [(value)]="model.account"
             placeholder="Address" style="min-width: 360px;">
             <mat-option *ngFor="let account of accounts" [value]="account">{{account}}</mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field>      
         <p>Amount of DUN Tokens: <span id="balance">{{model.balance}}</span></p>
       </mat-card-content>
     </mat-card>
   </div>
   <div class="col-6">
-    <form [formGroup]="sendTokenForm">
+    <form [formGroup]="approveForm">
       <mat-card class="canCall">
         <mat-card-header>
-          <button mat-card-avatar mat-icon-button (click)="openDialog('sendToken')">
+          <button mat-card-avatar mat-icon-button (click)="openDialog('approve')">
             <mat-icon class="iconMargin">info</mat-icon>
           </button>
-          <mat-card-title>Send Token</mat-card-title>
+          <mat-card-title>Approve</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <mat-form-field>
-            <input type="text" matInput placeholder="Amount" (change)="setSendAmount($event)" formControlName="amount">
-            <mat-error *ngIf="sendTokenForm.invalid">{{sendTokenErrorMsg('amount')}}</mat-error>
+            <input type="text" matInput placeholder="Amount" (change)="setAmount($event)" formControlName="amount">
+            <mat-error *ngIf="approveForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
           </mat-form-field>
           <mat-form-field class="address-field">
-            <input type="text" matInput placeholder="Receiver Address" (change)="setSendReceiver($event)"
+            <input type="text" matInput placeholder="Receiver Address" (change)="setReceiver($event)"
               formControlName="addr">
-            <mat-error *ngIf="sendTokenForm.invalid">{{sendTokenErrorMsg('addr')}}</mat-error>
+            <mat-error *ngIf="approveForm.invalid">{{approveErrorMsg('addr')}}</mat-error>
           </mat-form-field>
-          <button mat-raised-button id="send" (click)="sendCoin()" [disabled]="!sendTokenForm.valid">Send Token</button>
+          <button mat-raised-button (click)="approve()" [disabled]="!approveForm.valid">Approve</button>
         </mat-card-content>
       </mat-card>
     </form>
@@ -63,25 +66,25 @@
     </mat-card>
   </div>
   <div class="col-6">
-    <form [formGroup]="approveForm">
+    <form [formGroup]="sendTokenForm">
       <mat-card class="canCall">
         <mat-card-header>
-          <button mat-card-avatar mat-icon-button (click)="openDialog('approve')">
+          <button mat-card-avatar mat-icon-button (click)="openDialog('sendToken')">
             <mat-icon class="iconMargin">info</mat-icon>
           </button>
-          <mat-card-title>Approve</mat-card-title>
+          <mat-card-title>Send Token</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <mat-form-field>
-            <input type="text" matInput placeholder="Amount" (change)="setAmount($event)" formControlName="amount">
-            <mat-error *ngIf="approveForm.invalid">{{approveErrorMsg('amount')}}</mat-error>
+            <input type="text" matInput placeholder="Amount" (change)="setSendAmount($event)" formControlName="amount">
+            <mat-error *ngIf="sendTokenForm.invalid">{{sendTokenErrorMsg('amount')}}</mat-error>
           </mat-form-field>
           <mat-form-field class="address-field">
-            <input type="text" matInput placeholder="Receiver Address" (change)="setReceiver($event)"
+            <input type="text" matInput placeholder="Receiver Address" (change)="setSendReceiver($event)"
               formControlName="addr">
-            <mat-error *ngIf="approveForm.invalid">{{approveErrorMsg('addr')}}</mat-error>
+            <mat-error *ngIf="sendTokenForm.invalid">{{sendTokenErrorMsg('addr')}}</mat-error>
           </mat-form-field>
-          <button mat-raised-button (click)="approve()" [disabled]="!approveForm.valid">Approve</button>
+          <button mat-raised-button id="send" (click)="sendCoin()" [disabled]="!sendTokenForm.valid">Send Token</button>
         </mat-card-content>
       </mat-card>
     </form>

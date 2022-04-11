@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {TxService} from '../util/transaction.service';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 declare let require: any;
 

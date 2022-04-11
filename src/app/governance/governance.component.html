@@ -41,7 +41,12 @@
             Change voting rules, Receive Approval
           </mat-panel-description>
         </mat-expansion-panel-header>
-
+        <p *ngIf="model.contractBalance !== null">
+            <button mat-card-avatar mat-icon-button (click)="openDialog('contractBalance')">
+                <mat-icon class="iconMargin">info</mat-icon>
+            </button>            
+            <strong>Contract Balance: </strong>{{model.contractBalance}} ETH
+          </p>
         <div class="row">
           <div class="col-12">
             <form [formGroup]="changeVotingForm" style="margin-top: 20px;">
@@ -267,6 +272,9 @@
         <mat-card-title>Check Reputation</mat-card-title>
       </mat-card-header>
       <mat-card-content>
+        <button mat-card-avatar mat-icon-button title="Copy address" (click)="copyText(selectedParticipant)">
+            <mat-icon class="iconMargin">content_copy</mat-icon>
+        </button>          
         <mat-form-field id="rep-selector" class="address-field">
             <mat-select name="participant" [(ngModel)]="selectedParticipant"
               placeholder="Address" formControlName="addr">

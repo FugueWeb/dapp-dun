@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
 import {Validators, FormGroup, FormBuilder} from '@angular/forms';
 import {Web3Service} from '../util/web3.service';
 import {TxService} from '../util/transaction.service';
-import { MatSnackBar } from '@angular/material';
-import {MatDialog} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../util/dialog.component';
 import { Gov } from '../models/gov';
 import { Proposal } from '../models/proposal';
@@ -13,7 +14,7 @@ declare let require: any;
 const governance_artifacts = require('../../../build/contracts/Governance.json');
 const token_artifacts = require('../../../build/contracts/DUNToken.json');
 const dialog_data = require('./info.json');
-const participants = require('../../assets/participants.json')
+const participants = require('../models/participants.json')
 
 @Component({
   selector: 'app-governance',
@@ -41,31 +42,42 @@ export class GovernanceComponent implements OnInit {
   govContract: Contract = new Contract();
 
   constructor(private web3Service: Web3Service, private matSnackBar: MatSnackBar,
-    private txService: TxService, private fb: FormBuilder, private dialog: MatDialog) {
+    private txService: TxService, private fb: FormBuilder, private dialog: MatDialog,
+    private clipboard: Clipboard) {
     console.log('Constructor: ' + web3Service);
   }
 
   ngOnInit(): void {
-    console.log('OnInit: ' + this.web3Service);
     this.watchAccount();
-    this.web3Service.artifactsToContract(governance_artifacts)
-      .then((GovernanceAbstraction) => {
-        this.Governance = GovernanceAbstraction;
-        this.getGovernanceData();
-      });
+    // this.web3Service.artifactsToContract(governance_artifacts)
+    //   .then((GovernanceAbstraction) => {
+    //     this.Governance = GovernanceAbstraction;
+    //     this.getGovernanceData();
+    //   });
     this.createFormGroups();
-    this.web3Service.artifactsToContract(token_artifacts)
-      .then((TokenAbstraction) => {
-        this.TokenERC20 = TokenAbstraction;
-      });
+    // this.web3Service.artifactsToContract(token_artifacts)
+    //   .then((TokenAbstraction) => {
+    //     this.TokenERC20 = TokenAbstraction;
+    //   });
     this.model.participants = participants
   }
 
   watchAccount() {
     this.web3Service.accountsObservable.subscribe((accounts) => {
-      this.accounts = accounts;
-      this.model.account = accounts[0];
+        this.accounts = accounts;
+        this.model.account = accounts[0];    
       // this.refreshBalance();
+    });
+    this.web3Service.providerObservable.subscribe(() => {
+        this.web3Service.artifactsToContract(governance_artifacts)
+            .then((GovernanceAbstraction) => {
+            this.Governance = GovernanceAbstraction;
+            this.getGovernanceData();
+        });
+        this.web3Service.artifactsToContract(token_artifacts)
+            .then((TokenAbstraction) => {
+            this.TokenERC20 = TokenAbstraction;
+        });        
     });
   }
 
@@ -76,7 +88,9 @@ export class GovernanceComponent implements OnInit {
     }
 
     try {
+        console.log(this.Governance)
       const deployedGovernance = await this.Governance.deployed();
+      const deployedTokenERC20 = await this.TokenERC20.deployed();
       console.log(deployedGovernance);
 
       this.govContract.address = deployedGovernance.address;
@@ -84,6 +98,9 @@ export class GovernanceComponent implements OnInit {
       this.govContract.minMinutes = await deployedGovernance.debatingPeriodInMinutes.call();
       this.govContract.sharesAddress = await deployedGovernance.sharesTokenAddress.call();
       this.govContract.numProposals = await deployedGovernance.numProposals.call();
+      this.web3Service.getETHBalance(deployedGovernance.address).then(res => {
+        this.model.contractBalance = this.web3Service.convertWeitoETH(res);
+      });
 
     } catch (e) {
       console.log(e);
@@ -538,5 +555,10 @@ export class GovernanceComponent implements OnInit {
 
   getWeiFromETH(amount) {
     this.model.convert_wei = this.web3Service.convertETHToWei(amount);
+  }
+
+  copyText(textToCopy: string) {
+    this.clipboard.copy(textToCopy);
+    this.setStatus('Copied to clipboard')
   }
 }

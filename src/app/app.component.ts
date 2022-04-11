@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {Web3Service} from './util/web3.service';
+//import {Web3Service} from './util/web3.service';
 
 @Component({
   selector: 'app-root',
@@ -8,10 +8,10 @@ import {Web3Service} from './util/web3.service';
 })
 export class AppComponent {
 
-  constructor(private web3Service: Web3Service) {
+  constructor() {
   }
 
-  onboard(){
-      this.web3Service.blockNativeOnboard();
-  }
+//   onboard(){
+//       this.web3Service.blockNativeOnboard();
+//   }
 }

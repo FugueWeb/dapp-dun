@@ -1,23 +1,23 @@
 [
     {
         "id": "balance",
-        "desc": "The token balance of the user's current address, as determined by Metamask. To change to another address, open Metamask, click the avatar in the top right corner, and choose the address. Alternatively, you can create or import another address in Metamask by selecting those options."
+        "desc": "The DUN token balance of the user's current address. This address is permissioned into the web application using Block Native, a plugin to help onboard participants into a web3 environment."
     },
     {
         "id": "tokenBalance",
-        "desc": "The token balance of a given address"
+        "desc": "The DUN token balance of a given address."
     },
     {
         "id": "sendToken",
-        "desc": "Send tokens from your balance to another address. You can send your tokens to a different address you control, or you can give your token to a trusted address, thus delegating more authority to that address. Note, the DUN token is the native token of the Decentralized UN and should not be confused with ether (ETH), the cryptocurrency of the Ethereum platform."
+        "desc": "Send tokens from your balance to another address. You can send your tokens to a different address you control, or you can give tokens to another participant, thereby delegating more authority to that address. Do not confuse this function with `approve`; `sendToken` is a transfer of tokens from one address to another. Note, the DUN token is the native token of the Decentralized UN and should not be confused with ether (ETH), the cryptocurrency of the Ethereum platform."
     },
     {
         "id": "approve",
-        "desc": "Approve an address (such as the Decentralized UN) to manage (i.e., receive, send, burn) tokens on your behalf."
+        "desc": "Approve an address (such as the Decentralized UN governance contract) to manage (i.e., receive, send, burn) tokens on your behalf. Approving at least one token is mandatory to establish agency within the DUN. Think of this as putting tokens in a type of escrow, thereby enabling the DUN to potentially alter your relative power or membership within the organization."
     },
     {
         "id": "mint",
-        "desc": "Create more DUN tokens as part of the Decentralized UN's monetary policy. Input the amount of tokens to mint, the recipient (i.e., the Decentralized UN), then get the data and include it in a proposal."
+        "desc": "Create more DUN tokens as part of the Decentralized UN's monetary policy. Input the amount of tokens to mint, the recipient (for examle, the Decentralized UN token contract), then get the hex data and include it in a proposal."
     },
     {
         "id": "setBuySellPrice",
@@ -93,7 +93,7 @@
     },
     {
         "id": "quorum-minDebate-numProposal",
-        "desc": "--QUORUM-- The minimum amount of votes, as determined by the balance of the voting addresses, required for a proposal to be executable --MINUTES FOR DEBATE-- The UNIX timestamp for when a proposal is executable. You can convert the timestamp to a date at www.unixtimestamp.com --NUMBER OF PROPOSALS-- The total number of proposals. Note, the number is zero indexed, meaning that if you search for the details on the seventh proposal using the `getProposalDetails` function, you should enter the number 6"
+        "desc": "--QUORUM-- The minimum amount of votes, as determined by the balance of the voting addresses (e.g., balance as of time when proposal executes), required for a proposal to be executable --MINUTES FOR DEBATE-- The UNIX timestamp for when a proposal is executable, converted into minutes. This is the minimum amount of time necessary before the proposal is executable. --NUMBER OF PROPOSALS-- The total number of proposals. Note, the number is zero indexed, meaning that if you search for the details on the seventh proposal using the `getProposalDetails` function, you should enter the number 6"
     },
     {
         "id": "checkAllowance",
@@ -102,5 +102,9 @@
     {
         "id": "getReputation",
         "desc": "Check the 'reputation' of a participant at a given address. In decentralized systems, the idea of reputation is quite different because the way one adds value to the system itself is not centrally managed or determined by a third party. Here we have three metrics. The first is measured by a 'non-fungible token' (ERC721), which a member state receives every time it successfully passes a proposal. The other two metrics are the current DUN token balance and ETH balance. As discussed elsewhere, the DUN tokens determine relative power within this environment, and the amount of ETH tokens essentially represents a type of global wealth."
+    },
+    {
+        "id": "contractBalance",
+        "desc": "This is the amount of ETH that the Governance contract has. Within the context of the DAO, you can think of this as the organizational budget. Understanding this point requires understanding the distinction between DUN, ETH, reputation tokens (i.e., security, utility, and non-fungible tokens)."
     }
 ]

@@ -5,6 +5,8 @@ export class Gov {
     data: string;
     account: string;
     balance: number;
+    contractBalance: number;
+    dunTokensBalance: number;
     proposal: {
         amount: number;
         desc: string;
