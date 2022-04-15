@@ -48,27 +48,16 @@ export class GovernanceComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.watchAccount();
-    // this.web3Service.artifactsToContract(governance_artifacts)
-    //   .then((GovernanceAbstraction) => {
-    //     this.Governance = GovernanceAbstraction;
-    //     this.getGovernanceData();
-    //   });
+    this.watchContract();
     this.createFormGroups();
-    // this.web3Service.artifactsToContract(token_artifacts)
-    //   .then((TokenAbstraction) => {
-    //     this.TokenERC20 = TokenAbstraction;
-    //   });
     this.model.participants = participants
   }
 
-  watchAccount() {
-    this.web3Service.accountsObservable.subscribe((accounts) => {
-        this.accounts = accounts;
-        this.model.account = accounts[0];    
-      // this.refreshBalance();
+  watchContract() {
+    this.web3Service.walletStateObservable$.subscribe((walletState) => {
+
     });
-    this.web3Service.providerObservable.subscribe(() => {
+    this.web3Service.providerObservable$.subscribe(() => {
         this.web3Service.artifactsToContract(governance_artifacts)
             .then((GovernanceAbstraction) => {
             this.Governance = GovernanceAbstraction;
@@ -88,13 +77,11 @@ export class GovernanceComponent implements OnInit {
     }
 
     try {
-        console.log(this.Governance)
       const deployedGovernance = await this.Governance.deployed();
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      console.log(deployedGovernance);
 
       this.govContract.address = deployedGovernance.address;
       this.govContract.quorum = await deployedGovernance.minimumQuorum.call();
+      this.govContract.owner = await deployedGovernance.owner.call();
       this.govContract.minMinutes = await deployedGovernance.debatingPeriodInMinutes.call();
       this.govContract.sharesAddress = await deployedGovernance.sharesTokenAddress.call();
       this.govContract.numProposals = await deployedGovernance.numProposals.call();
@@ -241,25 +228,33 @@ export class GovernanceComponent implements OnInit {
     const data = this.model.data;
 
     console.log('Proposal to send ' + amount + ' wei to ' + beneficiary + ' because ' + justification + '. Data: ' + data);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedGovernance = await this.Governance.deployed();
-      const transaction = await deployedGovernance.newProposal.sendTransaction(beneficiary, amount, justification, data, {
-        from: this.model.account
-      });
-
-      if (!transaction) {
-        this.setStatus('Transaction failed!');
-      } else {
-        this.setStatus('Transaction complete!');
-        this.updateTx(transaction);
-        await this.getGovernanceData();
+        const deployedGovernance = await this.Governance.deployed();
+        this.web3Service.newProposal(deployedGovernance, beneficiary, amount, justification, data);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error making proposal; see log.');
       }
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error making proposal; see log.');
-    }
+
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedGovernance = await this.Governance.deployed();
+    //   const transaction = await deployedGovernance.newProposal.sendTransaction(beneficiary, amount, justification, data, {
+    //     from: this.model.account
+    //   });
+
+    //   if (!transaction) {
+    //     this.setStatus('Transaction failed!');
+    //   } else {
+    //     this.setStatus('Transaction complete!');
+    //     this.updateTx(transaction);
+    //     await this.getGovernanceData();
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error making proposal; see log.');
+    // }
   }
 
   async getProposal(pNumber) {
@@ -330,19 +325,27 @@ export class GovernanceComponent implements OnInit {
     const proposalNum = this.model.proposalNum;
 
     console.log('Vote ' + choice + ' for proposal ' + proposalNum);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedGovernance = await this.Governance.deployed();
-      const transaction = await deployedGovernance.vote.sendTransaction(proposalNum, choice, {
-        from: this.model.account
-      });
+        const deployedGovernance = await this.Governance.deployed();
+        this.web3Service.vote(deployedGovernance, proposalNum, choice);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error voting; see log.');
+      }
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error voting for proposal; see log.');
-    }
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedGovernance = await this.Governance.deployed();
+    //   const transaction = await deployedGovernance.vote.sendTransaction(proposalNum, choice, {
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error voting for proposal; see log.');
+    // }
   }
 
   async executeProposal() {
@@ -355,71 +358,28 @@ export class GovernanceComponent implements OnInit {
     const proposalNum = this.model.proposalNum;
 
     console.log('Execute proposal ' + proposalNum + ' with data ' + data);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedGovernance = await this.Governance.deployed();
-      const transaction = await deployedGovernance.executeProposal.sendTransaction(proposalNum, data, {
-        from: this.model.account
-      });
+        const deployedGovernance = await this.Governance.deployed();
+        this.web3Service.executeProposal(deployedGovernance, proposalNum, data);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error executing proposal; see log.');
+      }
 
-      this.txSuccess(transaction);
-      await this.getGovernanceData();
-      this.web3Service.updateContract(); //alert Token contract to refresh state
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error executing proposal; see log.');
-    }
-  }
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedGovernance = await this.Governance.deployed();
+    //   const transaction = await deployedGovernance.executeProposal.sendTransaction(proposalNum, data, {
+    //     from: this.model.account
+    //   });
 
-  async receiveApproval() {
-    if (!this.Governance) {
-      this.setStatus('Governance is not loaded, unable to send transaction');
-      return;
-    }
-
-    const data = this.model.data;
-    const amount = this.model.amount;
-
-    console.log('Receive approval from ' + this.model.account + ' for ' + this.govContract.sharesAddress + ' to receive ' + amount + ' with data ' + data);
-
-    this.setStatus('Initiating transaction... (please wait)');
-    try {
-      const deployedGovernance = await this.Governance.deployed();
-      const transaction = await deployedGovernance.receiveApproval.sendTransaction(this.model.account, amount, this.govContract.sharesAddress, data, {
-        from: this.model.account
-      });
-
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error receiving approval; see log.');
-    }
-  }
-
-  async transferOwnership() {
-    if (!this.Governance) {
-      this.setStatus('Governance is not loaded, unable to send transaction');
-      return;
-    }
-
-    const newOwner = this.model.newOwner;
-
-    console.log('Transfer ownership of Governance to ' + newOwner);
-
-    this.setStatus('Initiating transaction... (please wait)');
-    try {
-      const deployedGovernance = await this.Governance.deployed();
-      const transaction = await deployedGovernance.transferOwnership.sendTransaction(newOwner, {
-        from: this.model.account
-      });
-
-
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error transferring ownership; see log.');
-    }
+    //   this.txSuccess(transaction);
+    //   await this.getGovernanceData();
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error executing proposal; see log.');
+    // }
   }
 
   async changeVotingRules() {
@@ -433,28 +393,102 @@ export class GovernanceComponent implements OnInit {
     const minMinutes = this.model.minMinutes;
 
     console.log('Change token contract to ' + tokenAddr + ' with ' + minMinutes + ' for debate and quorum of ' + quorum);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedGovernance = await this.Governance.deployed();
-      const transaction = await deployedGovernance.changeVotingRules.sendTransaction(tokenAddr, quorum, minMinutes, {
-        from: this.model.account
-      });
-
-      if (!transaction) {
-        this.model.checkProp = transaction;
-        this.setStatus('Transaction failed!');
-      } else {
-        this.model.checkProp = transaction;
-        this.setStatus('Transaction complete!');
-        this.updateTx(transaction);
-        await this.getGovernanceData();
+        const deployedGovernance = await this.Governance.deployed();
+        this.web3Service.changeVotingRules(deployedGovernance, tokenAddr, quorum, minMinutes);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error changing rules; see log.');
       }
-    } catch (e) {
-      console.log(e);
-      this.model.checkProp = 'error, see log';
-      this.setStatus('Error changing voting rules; see log.');
+
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedGovernance = await this.Governance.deployed();
+    //   const transaction = await deployedGovernance.changeVotingRules.sendTransaction(tokenAddr, quorum, minMinutes, {
+    //     from: this.model.account
+    //   });
+
+    //   if (!transaction) {
+    //     //this.model.checkProp = transaction;
+    //     this.setStatus('Transaction failed!');
+    //   } else {
+    //     //this.model.checkProp = transaction;
+    //     this.setStatus('Transaction complete!');
+    //     this.updateTx(transaction);
+    //     await this.getGovernanceData();
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    //   //this.model.checkProp = 'error, see log';
+    //   this.setStatus('Error changing voting rules; see log.');
+    // }
+  }
+
+  async receiveApproval() {
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
+      return;
     }
+
+    const data = this.model.data;
+    const amount = this.model.amount;
+
+    console.log('Receive approval from ' + this.model.account + ' for ' + this.govContract.sharesAddress + ' to receive ' + amount + ' with data ' + data);
+    this.setStatus('Initiating transaction... (please wait)');
+    try {
+        const deployedGovernance = await this.Governance.deployed();
+        this.web3Service.receiveApproval(deployedGovernance, this.model.account, amount, this.govContract.sharesAddress, data);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error receiving approval; see log.');
+      }
+
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedGovernance = await this.Governance.deployed();
+    //   const transaction = await deployedGovernance.receiveApproval.sendTransaction(this.model.account, amount, this.govContract.sharesAddress, data, {
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error receiving approval; see log.');
+    // }
+  }
+
+  async transferOwnership() {
+    if (!this.Governance) {
+      this.setStatus('Governance is not loaded, unable to send transaction');
+      return;
+    }
+
+    const newOwner = this.model.newOwner;
+
+    console.log('Transfer ownership of Governance to ' + newOwner);
+    this.setStatus('Initiating transaction... (please wait)');
+    try {
+        const deployedGovernance = await this.Governance.deployed();
+        this.web3Service.transferGovOwnership(deployedGovernance, newOwner);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error transferring ownership; see log.');
+      }
+
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedGovernance = await this.Governance.deployed();
+    //   const transaction = await deployedGovernance.transferOwnership.sendTransaction(newOwner, {
+    //     from: this.model.account
+    //   });
+
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error transferring ownership; see log.');
+    // }
   }
 
   async dissolve() {
@@ -464,19 +498,27 @@ export class GovernanceComponent implements OnInit {
     }
 
     console.log('Self destruct contract');
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedGovernance = await this.Governance.deployed();
-      const transaction = await deployedGovernance.dissolve.sendTransaction({
-        from: this.model.account
-      });
+        const deployedGovernance = await this.Governance.deployed();
+        this.web3Service.dissolve(deployedGovernance);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error dissolving; see log.');
+      }
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error with self destruct; see log.');
-    }
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedGovernance = await this.Governance.deployed();
+    //   const transaction = await deployedGovernance.dissolve.sendTransaction({
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error with self destruct; see log.');
+    // }
   }
 
   async checkReputation(repAddress) {
@@ -503,10 +545,10 @@ export class GovernanceComponent implements OnInit {
       });
       
       if (!transaction) {
-        this.model.checkProp = transaction;
+        //this.model.checkProp = transaction;
         this.setStatus('Check Reputation failed!');
       } else {
-        this.model.checkProp = transaction;
+        //this.model.checkProp = transaction;
         this.model.reputation = transaction.words[0];
         this.setStatus('Check Reputation complete!');
       }

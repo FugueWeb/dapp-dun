@@ -83,6 +83,17 @@ This is an open source project. Please post any comments - technical, political,
 
 * If the dApp is not reading your address, go into Metamask's settings and under Security & Privacy, turn off Privacy Mode. Now refresh the page. 
 
+## Dev
+
+First clone the repo and `npm install`. Putting aside the Angular piece, you will need to compile and deploy the smart contracts. Truffle is an excellent option for local testing, for example:
+
+* Run Ganache (port 7545)
+    * Take the mnemonic seed provided, put that into Metamask (or any Web3 provider), and you should see a 100ETH test balance
+* `truffle migrate`
+    * This should compile and then deploy the smart contracts
+* `ng serve`
+    * Now use the Angular CLI to start the app frontend
+
 ## Resources
 
 * Truffle and [Angular Box](https://truffleframework.com/boxes/angular-truffle-box)

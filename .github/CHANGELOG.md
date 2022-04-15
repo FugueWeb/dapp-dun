@@ -1,5 +1,11 @@
 # Change Log: Decentralized UN
 
+## 20220415
+
+* BlockNative Notify integration
+* Refactored code to improve Web3Service
+* Improvements to HTML UI
+
 ## 20220411
 
 * Version 3.0

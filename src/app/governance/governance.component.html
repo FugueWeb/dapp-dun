@@ -7,7 +7,7 @@
     <button mat-icon-button (click)="openDialog('quorum-minDebate-numProposal')" style="float:left;">
       <mat-icon class="iconMargin">info</mat-icon>
     </button>
-    <p>Quorum: {{govContract.quorum}} | Minutes for Debate: {{govContract.minMinutes}} | Number of Proposals:
+    <p><strong>Quorum Minimum</strong>: {{govContract.quorum}} | <strong>Minutes for Debate</strong>: {{govContract.minMinutes}} | <strong>Number of Proposals</strong>:
       {{govContract.numProposals}}</p>
   </div>
   <div class="col-6">
@@ -45,7 +45,7 @@
             <button mat-card-avatar mat-icon-button (click)="openDialog('contractBalance')">
                 <mat-icon class="iconMargin">info</mat-icon>
             </button>            
-            <strong>Contract Balance: </strong>{{model.contractBalance}} ETH
+            <strong>Contract Balance: </strong>{{model.contractBalance}} ETH | <strong>Owner: </strong>{{govContract.owner}}
           </p>
         <div class="row">
           <div class="col-12">

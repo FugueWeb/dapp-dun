@@ -19,7 +19,7 @@ const dialog_data = require('../governance/info.json');
   styleUrls: ['./tokenERC20.component.css']
 })
 export class TokenERC20Component implements OnInit {
-  accounts: string[];
+//   accounts: string[];
   TokenERC20: any;
   status: string = '';
   sendTokenForm: FormGroup;
@@ -48,26 +48,25 @@ export class TokenERC20Component implements OnInit {
   }
 
   watchContract() {
-    this.web3Service.accountsObservable.subscribe((accounts) => {
-      this.accounts = accounts;
-      this.model.account = accounts[0];
-      //Called after BN sets web3 provider so that Truffle can create contract abstracts
-      this.web3Service.providerObservable.subscribe(() => {
+    this.web3Service.walletStateObservable$.subscribe((walletState) => {
+        this.model.account = walletState[0].accounts[0].address;
+    });
+    //Called after BN sets web3 provider so that Truffle can create contract abstracts
+    this.web3Service.providerObservable$.subscribe(() => {
         this.web3Service.artifactsToContract(token_artifacts)
             .then((TokenAbstraction) => {
             this.TokenERC20 = TokenAbstraction;
-            this.refreshBalance(accounts);
-        });        
-      });
+            this.getTokenData(this.model.account);
+        });
     });
   }
 
-  async refreshBalance(accounts) {
-      console.log(accounts);
+  async getTokenData(account) {
     try {
       const deployedTokenERC20 = await this.TokenERC20.deployed();
-      this.model.balance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(accounts[0]));
+      this.model.balance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(account));
       this.model.dunTokensBalance = this.web3Service.convertWeitoETH(await deployedTokenERC20.balanceOf.call(deployedTokenERC20.address));
+      this.model.owner = await deployedTokenERC20.owner.call();
       this.model.totalSupply = this.web3Service.convertWeitoETH(await deployedTokenERC20.totalSupply.call());
       this.model.sellPrice = this.web3Service.convertWeitoETH(await deployedTokenERC20.sellPrice.call());
       this.model.buyPrice = this.web3Service.convertWeitoETH(await deployedTokenERC20.buyPrice.call());
@@ -227,21 +226,29 @@ export class TokenERC20Component implements OnInit {
     const amount = this.model.sendAmount;
     const receiver = this.model.sendReceiver;
 
-    console.log('Sending coins' + amount + ' to ' + receiver);
-
+    console.log('Sending ' + amount + ' coins to ' + receiver);
     this.setStatus('Initiating transaction... (please wait)');
-    try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.transfer.sendTransaction(receiver, amount, {
-        from: this.model.account
-      });
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error sending coin; see log.');
-    }
-    this.refreshBalance(this.model.account);
+    try {
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.transfer(deployedTokenERC20, receiver, amount);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error sending coin; see log.');
+      }
+
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.transfer.sendTransaction(receiver, amount, {
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error sending coin; see log.');
+    // }
+    // this.refreshBalance(this.model.account);
   }
 
   async approve() {
@@ -257,40 +264,24 @@ export class TokenERC20Component implements OnInit {
 
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.approve.sendTransaction(receiver, amount, {
-        from: this.model.account
-      });
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.approve(deployedTokenERC20, receiver, amount);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error approving; see log.');
+      }
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error approving; see log.');
-    }
-  }
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.approve.sendTransaction(receiver, amount, {
+    //     from: this.model.account
+    //   });
 
-  async transferOwnership() {
-    if (!this.TokenERC20) {
-      this.setStatus('TokenERC20 is not loaded, unable to send transaction');
-      return;
-    }
-
-    const newOwner = this.model.newOwner;
-
-    console.log('Transfer ownership of TokenERC20 to ' + newOwner);
-
-    this.setStatus('Initiating transaction... (please wait)');
-    try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.transferOwnership.sendTransaction(newOwner, {
-        from: this.model.account
-      });
-
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error transferring ownership; see log.');
-    }
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error approving; see log.');
+    // }
   }
 
   async mint() {
@@ -303,20 +294,27 @@ export class TokenERC20Component implements OnInit {
     const receiver = this.model.mintReceiver;
 
     console.log('Mint ' + amount + ' to ' + receiver);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.mintToken.sendTransaction(receiver, amount, {
-        from: this.model.account
-      });
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.mintToken(deployedTokenERC20, receiver, amount);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error minting; see log.');
+      }
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.mintToken.sendTransaction(receiver, amount, {
+    //     from: this.model.account
+    //   });
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error minting; see log.');
-    }
-    this.refreshBalance(this.model.account);
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error minting; see log.');
+    // }
+    // this.refreshBalance(this.model.account);
   }
 
   async setPrices() {
@@ -329,20 +327,28 @@ export class TokenERC20Component implements OnInit {
     const buyAmount = this.model.setBuyPrice;
 
     console.log('Sell Price: ' + sellAmount + ', Buy Price: ' + buyAmount);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.setPrices.sendTransaction(sellAmount, buyAmount, {
-        from: this.model.account
-      });
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.setPrices(deployedTokenERC20, sellAmount, buyAmount);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error setting prices; see log.');
+      }
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error setting prices; see log.');
-    }
-    this.refreshBalance(this.model.account);
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.setPrices.sendTransaction(sellAmount, buyAmount, {
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error setting prices; see log.');
+    // }
+    // this.refreshBalance(this.model.account);
   }
 
   async allowBuySell() {
@@ -352,19 +358,27 @@ export class TokenERC20Component implements OnInit {
     }
 
     console.log('Open/close the market');
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.allowBuySell.sendTransaction({
-        from: this.model.account
-      });
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error allowing/denying buy/sell; see log.');
-    }
-    this.refreshBalance(this.model.account);
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.allowBuySell(deployedTokenERC20);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error open/close market; see log.');
+      }
+
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.allowBuySell.sendTransaction({
+    //     from: this.model.account
+    //   });
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error allowing/denying buy/sell; see log.');
+    // }
+    // this.refreshBalance(this.model.account);
   }
 
   async sellToken(amount) {
@@ -374,20 +388,28 @@ export class TokenERC20Component implements OnInit {
     }
 
     console.log('Sell: ' + amount);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.sell.sendTransaction(amount, {
-        from: this.model.account
-      });
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.sell(deployedTokenERC20, amount);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error selling; see log.');
+      }
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error selling; see log.');
-    }
-    this.refreshBalance(this.model.account);
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.sell.sendTransaction(amount, {
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error selling; see log.');
+    // }
+    // this.refreshBalance(this.model.account);
   }
 
   async buyToken(value) {
@@ -397,21 +419,29 @@ export class TokenERC20Component implements OnInit {
     }
 
     console.log('Buy amount (in wei): ' + value);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.buy.sendTransaction({
-        from: this.model.account,
-        value: value
-      });
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.buy(deployedTokenERC20, value);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error buying; see log.');
+      }
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error buying; see log.');
-    }
-    this.refreshBalance(this.model.account);
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.buy.sendTransaction({
+    //     from: this.model.account,
+    //     value: value
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error buying; see log.');
+    // }
+    // this.refreshBalance(this.model.account);
   }
 
   async checkAllowance(addr1, addr2) {
@@ -454,19 +484,27 @@ export class TokenERC20Component implements OnInit {
     const freeze = this.model.sanctionState;
 
     console.log('Sanction member ' + member + ' : ' + freeze);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      const transaction = await deployedTokenERC20.freezeAccount.sendTransaction(member, freeze, {
-        from: this.model.account
-      });
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.freezeAccount(deployedTokenERC20, member, freeze);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error sanctioning member; see log.');
+      }
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error sanctioning member; see log.');
-    }
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.freezeAccount.sendTransaction(member, freeze, {
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error sanctioning member; see log.');
+    // }
   }
 
   async burnFrom() {
@@ -479,35 +517,74 @@ export class TokenERC20Component implements OnInit {
     const from = this.model.burnFromAddr;
 
     console.log('Burn ' + value + ' from account ' + from);
-
     this.setStatus('Initiating transaction... (please wait)');
     try {
-      const deployedTokenERC20 = await this.TokenERC20.deployed();
-      console.log(deployedTokenERC20);
-      const transaction = await deployedTokenERC20.burnFrom.sendTransaction(from, value, {
-        from: this.model.account
-      });
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.burnFrom(deployedTokenERC20, from, value);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error burning from; see log.');
+      }
 
-      this.txSuccess(transaction);
-    } catch (e) {
-      console.log(e);
-      this.setStatus('Error burning from; see log.');
-    }
-    this.refreshBalance(this.model.account);
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   console.log(deployedTokenERC20);
+    //   const transaction = await deployedTokenERC20.burnFrom.sendTransaction(from, value, {
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error burning from; see log.');
+    // }
+    // this.refreshBalance(this.model.account);
   }
 
+  async transferOwnership() {
+    if (!this.TokenERC20) {
+      this.setStatus('TokenERC20 is not loaded, unable to send transaction');
+      return;
+    }
+
+    const newOwner = this.model.newOwner;
+
+    console.log('Transfer ownership of TokenERC20 to ' + newOwner);
+    this.setStatus('Initiating transaction... (please wait)');
+    try {
+        const deployedTokenERC20 = await this.TokenERC20.deployed();
+        this.web3Service.transferOwnership(deployedTokenERC20, newOwner);
+      } catch (e) {
+        console.log(e);
+        this.setStatus('Error transferring ownership; see log.');
+      }
+
+    // this.setStatus('Initiating transaction... (please wait)');
+    // try {
+    //   const deployedTokenERC20 = await this.TokenERC20.deployed();
+    //   const transaction = await deployedTokenERC20.transferOwnership.sendTransaction(newOwner, {
+    //     from: this.model.account
+    //   });
+
+    //   this.txSuccess(transaction);
+    // } catch (e) {
+    //   console.log(e);
+    //   this.setStatus('Error transferring ownership; see log.');
+    // }
+  }
   /************* HELPER FUNCTIONS *************/
 
-  updateTx(tx) {
-    this.txService.updateTx(tx);
-  }
+//   updateTx(tx) {
+//     this.txService.updateTx(tx);
+//   }
 
   txSuccess(success: boolean) {
     if (!success) {
       this.setStatus('Transaction failed!');
     } else {
       this.setStatus('Transaction complete!');
-      this.updateTx(success);
+      //this.updateTx(success);
     }
   }
 

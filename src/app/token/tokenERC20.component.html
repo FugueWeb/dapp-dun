@@ -10,13 +10,8 @@
       <mat-card-content>
         <button mat-card-avatar mat-icon-button title="Copy address" (click)="copyText(model.account)">
             <mat-icon class="iconMargin">content_copy</mat-icon>
-        </button>  
-        <mat-form-field id="address-selector" class="address-field">
-          <mat-select name="account" [(value)]="model.account"
-            placeholder="Address" style="min-width: 360px;">
-            <mat-option *ngFor="let account of accounts" [value]="account">{{account}}</mat-option>
-          </mat-select>
-        </mat-form-field>      
+            {{model.account}}
+        </button>
         <p>Amount of DUN Tokens: <span id="balance">{{model.balance}}</span></p>
       </mat-card-content>
     </mat-card>
@@ -105,10 +100,11 @@
         </mat-expansion-panel-header>
         <p *ngIf="model.sellPrice !== null">
           <strong>Market Open:</strong> {{model.buySellState}} | <strong>Sell Price:</strong> {{model.sellPrice}} ETH |
-          <strong>Buy Price:</strong> {{model.buyPrice}} ETH<br>
+          <strong>Buy Price:</strong> {{model.buyPrice}} ETH | <strong>Owner: </strong>{{model.owner}}<br>
           <strong>Contract Balance: </strong>{{model.contractBalance}} ETH | <strong>Available to Buy:
           </strong>{{model.dunTokensBalance}} DUN | <strong>Total supply: </strong>{{model.totalSupply}} DUN
         </p>
+        <p>For the decentralized market to work the following conditions must apply. 1. The market must be open. 2. There must be a buy and sell price set. 3. The Token contract must have a balance of ETH greater than the Buy price (i.e., you are buying the DUN token from the Token contract). 4. There must be DUN tokens available to buy (note, this amount might be a very small decimal, as the DUN token is highly divisible). Total supply reflects an expansion or contraction of the monetary supply as tokens are minted and burned. The owner (of the Token contract) should be the Governance contract address.</p>
 
         <div class="row">
           <div class="col-6">
@@ -325,35 +321,27 @@
             </form>
           </div>
           <div class="col-6">
-
-          </div>
-        </div><!-- end row -->
-        <div class="row">
-          <div class="col-6">
             <form [formGroup]="transferOwnershipForm">
-              <mat-card class="needConsensus">
-                <mat-card-header>
-                  <button mat-card-avatar mat-icon-button (click)="openDialog('transferOwnershipToken')">
-                    <mat-icon class="iconMargin">info</mat-icon>
-                  </button>
-                  <mat-card-title>Transfer Ownership of Token Contract</mat-card-title>
-                </mat-card-header>
-                <mat-card-subtitle><em>Only consensus can transfer</em></mat-card-subtitle>
-                <mat-card-content>
-                  <mat-form-field>
-                    <input matInput placeholder="New Owner Address" (change)="setTransferOwnership($event)"
-                      formControlName="addr">
-                  </mat-form-field>
-                  <button mat-raised-button color="primary" (click)="transferOwnership()"
-                    [disabled]="!transferOwnershipForm.valid">Transfer</button>
-                </mat-card-content>
-              </mat-card>
-            </form>
-          </div>
-          <div class="col-6">
-
-          </div>
-        </div>
+                <mat-card class="needConsensus">
+                  <mat-card-header>
+                    <button mat-card-avatar mat-icon-button (click)="openDialog('transferOwnershipToken')">
+                      <mat-icon class="iconMargin">info</mat-icon>
+                    </button>
+                    <mat-card-title>Transfer Ownership of Token Contract</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-subtitle><em>Only consensus can transfer</em></mat-card-subtitle>
+                  <mat-card-content>
+                    <mat-form-field>
+                      <input matInput placeholder="New Owner Address" (change)="setTransferOwnership($event)"
+                        formControlName="addr">
+                    </mat-form-field>
+                    <button mat-raised-button color="primary" (click)="transferOwnership()"
+                      [disabled]="!transferOwnershipForm.valid">Transfer</button>
+                  </mat-card-content>
+                </mat-card>
+              </form>
+            </div>
+          </div><!-- end row -->
       </mat-expansion-panel>
     </mat-accordion>
   </div>

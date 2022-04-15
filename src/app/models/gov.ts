@@ -5,7 +5,7 @@ export class Gov {
     data: string;
     account: string;
     balance: number;
-    contractBalance: number;
+    contractBalance: any;
     dunTokensBalance: number;
     proposal: {
         amount: number;
@@ -25,10 +25,11 @@ export class Gov {
     quorum: number;
     minMinutes: number;
     newOwner: string;
-    convert_wei: number;
+    convert_wei: any;
     convert_ether: number;
     reputation: number;
-    DUNbalance: number;
-    participantETHBalance: number;
+    DUNbalance: any;
+    participantETHBalance: any;
     participants: string[];
+    owner: string;
 }

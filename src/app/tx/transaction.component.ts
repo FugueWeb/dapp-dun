@@ -10,7 +10,7 @@ declare let require: any;
 })
 export class TransactionComponent implements OnInit {
 
-  txs: Array<any> = [];
+  txs: Array<string> = [];
   status = '';
 
   constructor(private txService: TxService, private matSnackBar: MatSnackBar) {
@@ -24,7 +24,6 @@ export class TransactionComponent implements OnInit {
   watchTx() {
     this.txService.txObservable.subscribe((tx) => {
       this.txs.push(tx);
-      console.log(tx);
     });
   }
 }

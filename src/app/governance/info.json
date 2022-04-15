@@ -17,7 +17,7 @@
     },
     {
         "id": "mint",
-        "desc": "Create more DUN tokens as part of the Decentralized UN's monetary policy. Input the amount of tokens to mint, the recipient (for examle, the Decentralized UN token contract), then get the hex data and include it in a proposal."
+        "desc": "Create more DUN tokens as part of the Decentralized UN's monetary policy. Input the amount of tokens to mint, the recipient (for example, the DUN Token contract), then get the hex data and include it in a proposal."
     },
     {
         "id": "setBuySellPrice",
@@ -41,7 +41,7 @@
     },  
     {
         "id": "buyTokens",
-        "desc": "Buy DUN tokens from the contract. The amount of tokens you will receive is proportionate to the amount of ether you send to the contract (i.e., amount of ETH in wei / price of DUN token)."
+        "desc": "Buy DUN tokens from the contract. The amount of tokens you will receive is proportionate to the amount of ether you send to the contract (i.e., amount of ETH in wei / price of DUN token). For example, if the buy price is 0.1 ETH and you send 0.2 ETH, you would get two DUN tokens (assuming the contract had at least two DUN tokens available for sale)."
     },    
     {
         "id": "convertETHtoWei",

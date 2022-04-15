@@ -4,4 +4,5 @@ export class Contract {
     minMinutes: number;
     sharesAddress: string;
     numProposals: number;
+    owner: string;
 };
