@@ -271,6 +271,7 @@ export class GovernanceComponent implements OnInit {
       this.proposal.beneficiary = result.recipient;
       this.proposal.executed = result.executed;
       this.proposal.minExecutionDate = result.minExecutionDate;
+      this.proposal.minExecutionDateConverted = this.timeConverter(result.minExecutionDate);
       this.proposal.numberOfVotes = result.numberOfVotes;
       this.proposal.proposalHash = result.proposalHash;
       this.proposal.proposalPassed = result.proposalPassed;
@@ -602,5 +603,18 @@ export class GovernanceComponent implements OnInit {
   copyText(textToCopy: string) {
     this.clipboard.copy(textToCopy);
     this.setStatus('Copied to clipboard')
+  }
+
+  timeConverter(UNIX_timestamp) {
+    var a = new Date(UNIX_timestamp * 1000);
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var year = a.getFullYear();
+    var month = months[a.getMonth()];
+    var date = a.getDate();
+    var hour = a.getHours();
+    var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes();
+    var sec = a.getSeconds() < 10 ? '0' + a.getSeconds() : a.getSeconds();
+    var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+    return time;
   }
 }

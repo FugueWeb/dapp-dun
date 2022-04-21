@@ -1,5 +1,10 @@
 # Change Log: Decentralized UN
 
+## 20220421
+
+* Minor edits for clarity (to `info`, `help`, and `proposal object`)
+* Added other features to Governance template
+
 ## 20220415
 
 * BlockNative Notify integration

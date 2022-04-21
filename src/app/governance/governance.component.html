@@ -7,7 +7,8 @@
     <button mat-icon-button (click)="openDialog('quorum-minDebate-numProposal')" style="float:left;">
       <mat-icon class="iconMargin">info</mat-icon>
     </button>
-    <p><strong>Quorum Minimum</strong>: {{govContract.quorum}} | <strong>Minutes for Debate</strong>: {{govContract.minMinutes}} | <strong>Number of Proposals</strong>:
+    <p><strong>Quorum Minimum</strong>: {{govContract.quorum}} | <strong>Minutes for Debate</strong>:
+      {{govContract.minMinutes}} | <strong>Number of Proposals</strong>:
       {{govContract.numProposals}}</p>
   </div>
   <div class="col-6">
@@ -42,11 +43,12 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
         <p *ngIf="model.contractBalance !== null">
-            <button mat-card-avatar mat-icon-button (click)="openDialog('contractBalance')">
-                <mat-icon class="iconMargin">info</mat-icon>
-            </button>            
-            <strong>Contract Balance: </strong>{{model.contractBalance}} ETH | <strong>Owner: </strong>{{govContract.owner}}
-          </p>
+          <button mat-card-avatar mat-icon-button (click)="openDialog('contractBalance')">
+            <mat-icon class="iconMargin">info</mat-icon>
+          </button>
+          <strong>Contract Balance: </strong>{{model.contractBalance}} ETH | <strong>Owner:
+          </strong>{{govContract.owner}}
+        </p>
         <div class="row">
           <div class="col-12">
             <form [formGroup]="changeVotingForm" style="margin-top: 20px;">
@@ -222,7 +224,8 @@
   <div class="col-6">
     <p [hidden]="!proposal.beneficiary"><strong>Recipient:</strong> {{proposal.beneficiary}} |
       <strong>Amount:</strong> {{proposal.amount}} wei | <strong>Description:</strong> {{proposal.desc}} |
-      <strong>Min Execution Date:</strong> {{proposal.minExecutionDate}} | <strong>Executed:</strong>
+      <strong>Min Execution Date: </strong>{{proposal.minExecutionDateConverted}} - {{proposal.minExecutionDate}} |
+      <strong>Executed:</strong>
       {{proposal.executed}} | <strong>Proposal passed:</strong> {{proposal.proposalPassed}} | <strong>Number of
         votes:</strong> {{proposal.numberOfVotes}} | <strong>Proposal hash:</strong> {{proposal.proposalHash}}</p>
   </div>
@@ -273,20 +276,24 @@
       </mat-card-header>
       <mat-card-content>
         <button mat-card-avatar mat-icon-button title="Copy address" (click)="copyText(selectedParticipant)">
-            <mat-icon class="iconMargin">content_copy</mat-icon>
-        </button>          
+          <mat-icon class="iconMargin">content_copy</mat-icon>
+        </button>
         <mat-form-field id="rep-selector" class="address-field">
-            <mat-select name="participant" [(ngModel)]="selectedParticipant"
-              placeholder="Address" formControlName="addr">
-              <mat-option *ngFor="let p of model.participants" [value]="p">{{p}}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="checkRepForm.invalid">{{checkRepErrorMsg('addr')}}</mat-error>
-          </mat-form-field>
-        <button mat-raised-button [disabled]="!checkRepForm.valid" (click)="checkReputation(selectedParticipant)">Go</button>
-        <span *ngIf="model.reputation != null"><strong>Reputation:</strong> {{model.reputation}} | <strong>DUN:</strong> {{model.DUNbalance}} | 
-            <strong>ETH:</strong> {{model.participantETHBalance}}
+          <mat-select name="participant" [(ngModel)]="selectedParticipant" placeholder="Address" formControlName="addr">
+            <mat-option *ngFor="let p of model.participants" [value]="p">{{p}}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="checkRepForm.invalid">{{checkRepErrorMsg('addr')}}</mat-error>
+        </mat-form-field>
+        <button mat-raised-button [disabled]="!checkRepForm.valid"
+          (click)="checkReputation(selectedParticipant)">Go</button>
+        <span *ngIf="model.reputation != null"><strong>Reputation:</strong> {{model.reputation}} | <strong>DUN:</strong>
+          {{model.DUNbalance}} |
+          <strong>ETH:</strong> {{model.participantETHBalance}}
+          <a mat-icon-button href="https://ropsten.etherscan.io/address/{{selectedParticipant}}" target="_blank" title="Github">
+            <mat-icon class="example-icon">open_in_new</mat-icon>
+          </a>
         </span>
-    </mat-card-content>
+      </mat-card-content>
     </mat-card>
   </div>
 </div> <!-- end row -->

@@ -9,7 +9,7 @@
     },
     {
         "id": "sendToken",
-        "desc": "Send tokens from your balance to another address. You can send your tokens to a different address you control, or you can give tokens to another participant, thereby delegating more authority to that address. Do not confuse this function with `approve`; `sendToken` is a transfer of tokens from one address to another. Note, the DUN token is the native token of the Decentralized UN and should not be confused with ether (ETH), the cryptocurrency of the Ethereum platform."
+        "desc": "Send tokens from your balance to another address. You can send your tokens to a different address you control, or you can give tokens to another participant, thereby bestowing (not delegating) more authority to that address. Do not confuse this function with `approve`; `sendToken` is a transfer of tokens from one address to another. Note, the DUN token is the native token of the Decentralized UN and should not be confused with ether (ETH), the cryptocurrency of the Ethereum platform."
     },
     {
         "id": "approve",

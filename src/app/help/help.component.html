@@ -58,7 +58,7 @@
                         </ol>
 
                         <h3>Example Proposals</h3>
-                        <p><strong>Basic proposal (no data): </strong>Humanitarian aid package<br>
+                        <p><strong>Basic proposal (no data): </strong>Example: Humanitarian aid package<br>
                         Note, the amount of ETH must not exceed the balance of ETH held by the governance contract. It is the governance contract, not the sender of the transaction, that will ultimately pay the amount to the recipient if the proposal passes.</p>
                         <p style="color:rgba(63, 81, 181);">
                             amount: 100000000000000000   //.1 ETH (in wei)<br>
@@ -66,14 +66,16 @@
                             description: Aid package to 0x1234<br>
                             data: 0x   //no data
                         </p>
-                        <p><strong>Proposal with data: </strong>Burn from an address<br>
-                        When making proposals with the `data` parameter, the `recipient` is always the address of the smart contract where the function will be called. So with `burnFrom` you should include the token contract address.</p>
+                        <p><strong>Proposal with data: </strong>Example: Burn from an address<br>
+                        When making proposals with the `data` parameter, the `recipient` is always the address of the smart contract where the function will be called. So with `burnFrom` you should include the token contract address as the recipient. The other parameters (address to burn from, amount of DUN tokens to burn) will be captured in the `data` hexidecimal.</p>
                         <p style="color:rgba(63, 81, 181);">
                             amount: 0   //not sending ETH<br>
-                            recipient: 0x4aAB103CC7B0363891Ed4C5059E55bCb9f2Ed14D  //token contract address<br>
-                            description: Burn from 0x7b6b<br>
-                            data: 0x79cc67900000000000000000000000007b6b5c4f5b20e66595bc65493d07c03a5be3f5c2<br>0000000000000000000000000000000000000000000000000000000000000001
+                            recipient: --insert token contract address--<br>
+                            description: Burn from 0xabcd1234<br>
+                            data: --Hexidecimal copied from Web3 provider-- Get this by attempting to call the function (in this example, burnFrom) with your desired parameters.
                         </p>
+                        <h3>More Information</h3>
+                        <p>Check out the open source <a href="https://github.com/fugueweb/dapp-dun" target="_blank">code repository and README</a> on Github.</p>
                     </div><!-- end col-->                  
                 </div><!-- end row -->
                 <div class="row">
