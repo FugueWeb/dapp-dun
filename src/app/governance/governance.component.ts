@@ -11,8 +11,8 @@ import { Proposal } from '../models/proposal';
 import { Contract } from '../models/contract';
 
 declare let require: any;
-const governance_artifacts = require('../../../build/contracts/Governance.json');
-const token_artifacts = require('../../../build/contracts/DUNToken.json');
+const governance_artifacts = require('../../../build/contracts/StateGovernor.json');
+const token_artifacts = require('../../../build/contracts/DiploCoin.json');
 const dialog_data = require('./info.json');
 const participants = require('../models/participants.json')
 
@@ -78,12 +78,25 @@ export class GovernanceComponent implements OnInit {
 
     try {
       const deployedGovernance = await this.Governance.deployed();
+      console.log(deployedGovernance);
 
       this.govContract.address = deployedGovernance.address;
+      this.govContract.sharesAddress = await deployedGovernance.token.call();
+      this.govContract.name = await deployedGovernance.name.call();
+      this.govContract.proposalThreshold = await deployedGovernance.proposalThreshold.call();
+      this.govContract.quorumDenominator = await deployedGovernance.quorumDenominator.call();
+      this.govContract.quorumNumerator = await deployedGovernance.quorumNumerator.call();
+      this.govContract.timelock = await deployedGovernance.timelock.call();
+      this.govContract.version = await deployedGovernance.version.call();
+      this.govContract.votingDelay = await deployedGovernance.votingDelay.call();
+      this.govContract.votingPeriod = await deployedGovernance.votingPeriod.call();
+      this.govContract.BALLOT_TYPEHASH = await deployedGovernance.BALLOT_TYPEHASH.call();
+      this.govContract.COUNTING_MODE = await deployedGovernance.COUNTING_MODE.call();
+      this.govContract.EXTENDED_BALLOT_TYPEHASH = await deployedGovernance.EXTENDED_BALLOT_TYPEHASH.call();
+
       this.govContract.quorum = await deployedGovernance.minimumQuorum.call();
       this.govContract.owner = await deployedGovernance.owner.call();
       this.govContract.minMinutes = await deployedGovernance.debatingPeriodInMinutes.call();
-      this.govContract.sharesAddress = await deployedGovernance.sharesTokenAddress.call();
       this.govContract.numProposals = await deployedGovernance.numProposals.call();
       this.web3Service.getETHBalance(deployedGovernance.address).then(res => {
         this.model.contractBalance = this.web3Service.convertWeitoETH(res);

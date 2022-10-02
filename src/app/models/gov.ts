@@ -1,4 +1,5 @@
 export class Gov {
+    name: string;
     beneficiary: string;
     amount: number;
     justification: string;

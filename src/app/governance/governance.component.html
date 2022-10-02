@@ -1,15 +1,23 @@
 <div class="row">
   <div class="col-6">
-    <p>Token Contract: <a href="https://ropsten.etherscan.io/address/{{govContract.sharesAddress}}"
+    <p>Token Contract: <a href="https://goerli-optimism.etherscan.io/address/{{govContract.sharesAddress}}"
         target="_blank">{{govContract.sharesAddress}}</a></p>
-    <p>Governance Contract: <a href="https://ropsten.etherscan.io/address/{{govContract.address}}"
+    <p>Governance Contract: <a href="https://goerli-optimism.etherscan.io/address/{{govContract.address}}"
         target="_blank">{{govContract.address}}</a></p>
     <button mat-icon-button (click)="openDialog('quorum-minDebate-numProposal')" style="float:left;">
       <mat-icon class="iconMargin">info</mat-icon>
     </button>
-    <p><strong>Quorum Minimum</strong>: {{govContract.quorum}} | <strong>Minutes for Debate</strong>:
+    <p><strong>Name</strong>: {{govContract.name}} | <strong>Version</strong>: {{govContract.version}} | <strong>Proposal Threshold</strong>:
+        {{govContract.proposalThreshold}} | <strong>Quorum Denominator</strong>:
+        {{govContract.quorumDenominator}} | <strong>Quorum Numerator</strong>:
+        {{govContract.quorumNumerator}} | <strong>Timelock Address</strong>:
+        {{govContract.timelock}} | <strong>Voting Delay</strong>:
+        {{govContract.votingDelay}} | <strong>Voting Period</strong>: {{govContract.votingPeriod}} | <strong>BALLOT TYPE HASH</strong>:
+        {{govContract.BALLOT_TYPEHASH}} | <strong>COUNTING MODE</strong>:
+        {{govContract.COUNTING_MODE}} | <strong>EXTENDED BALLOT TYPE HASH</strong>: {{govContract.EXTENDED_BALLOT_TYPEHASH}}</p>
+    <!-- <p><strong>Quorum Minimum</strong>: {{govContract.quorum}} | <strong>Minutes for Debate</strong>:
       {{govContract.minMinutes}} | <strong>Number of Proposals</strong>:
-      {{govContract.numProposals}}</p>
+      {{govContract.numProposals}}</p> -->
   </div>
   <div class="col-6">
     <mat-card class="readOnly">
@@ -289,7 +297,7 @@
         <span *ngIf="model.reputation != null"><strong>Reputation:</strong> {{model.reputation}} | <strong>DUN:</strong>
           {{model.DUNbalance}} |
           <strong>ETH:</strong> {{model.participantETHBalance}}
-          <a mat-icon-button href="https://ropsten.etherscan.io/address/{{selectedParticipant}}" target="_blank" title="Github">
+          <a mat-icon-button href="https://goerli-optimism.etherscan.io/address/{{selectedParticipant}}" target="_blank" title="Github">
             <mat-icon class="example-icon">open_in_new</mat-icon>
           </a>
         </span>

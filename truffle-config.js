@@ -1,8 +1,8 @@
 require('dotenv').config();
-//var HDWalletProvider = require("@truffle/hdwallet-provider");
+var HDWalletProvider = require("@truffle/hdwallet-provider");
 
 var mnemonic = process.env.SEED;
-var infura = "https://ropsten.infura.io/v3/" + process.env.INFURA_PROJECT_ID;
+const infuraOGoerliKey = process.env.INFURA_OGOERLI_KEY;
 
 module.exports = {
   networks: {
@@ -16,18 +16,32 @@ module.exports = {
       port: 8545,
       network_id: '*' // Match any network id
     },
-    // ropsten: {
-    //   provider: function() {
-    //     return new HDWalletProvider(mnemonic, infura)
-    //   },
-    //   network_id: 3,
-    //   gas : 7221975, //default: 6721975
-    //   gasPrice : 150000000000 //default: 100000000000
-    // }        
+    ogoerli: {
+        network_id: 420,
+        chain_id: 420,
+        provider: function () {
+          return new HDWalletProvider(mnemonic, "https://optimism-goerli.infura.io/v3/" + infuraOGoerliKey, 0, 1);
+        },
+        networkCheckTimeout: 999999
+    },
+    oganache: {
+      provider: () => {
+        return new HDWalletProvider('enter Ganache seed here', 'http://localhost:8545')
+      },
+      network_id: "420"
+    }
   },
   compilers: {
-      solc: {
-          version: "^0.6.6"
+    solc: {
+      version: "0.8.14",      // Fetch exact version from solc-bin (default: truffle's version)
+      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+      settings: {          // See the solidity docs for advice about optimization and evmVersion
+       optimizer: {
+         enabled: true,
+         runs: 800
+       }
+       //evmVersion: "byzantium"
       }
+    }
   }
 }

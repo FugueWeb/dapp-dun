@@ -1,6 +1,13 @@
 export class Token {
     address: string;
     owner: string;
+    DOMAIN_SEPARATOR: string;
+    decimals: number;
+    name: string;
+    paused: boolean;
+    symbol: string;
+    delegate: string;
+
     sendAmount: number;
     sendReceiver: string;
     contractBalance: any;

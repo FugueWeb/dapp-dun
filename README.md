@@ -2,6 +2,8 @@
 
 ### [Click here](https://fugueweb.com/dev/dun) for the decentralized application (dApp).
 
+### *Update in progress to Optimism Goerli Testnet and OpenZeppelin Contracts*
+
 # Setup
 
 Install [Metamask](https://metamask.io/) in Chrome, Firefox, or [Brave browser](https://brave.com/) and then enable the extension. You must use a computer or laptop (no mobile configuration yet).
@@ -97,7 +99,6 @@ First clone the repo and `npm install`. Putting aside the Angular piece, you wil
 ## Resources
 
 * Truffle and [Angular Box](https://truffleframework.com/boxes/angular-truffle-box)
-* Angular 8
-* Solidity
-* Metamask
-* Ethereum
+* Angular 13
+* Block Native
+* Open Zeppelin / Solidity

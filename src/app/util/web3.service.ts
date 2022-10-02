@@ -16,18 +16,18 @@ const contract = require('@truffle/contract');
 /******* BLOCKNATIVE CONFIG ***********/
 
 // Change these parameters depending on network being used
-const ROPSTEN_RPC_URL = 'https://ropsten.infura.io/v3/' + environment.INFURA_ID;
-//Ropsten 0x3 - Ganache 0x539
+const O_GOERLI_RPC_URL = 'https://optimism-goerli.infura.io/v3/' + environment.INFURA_OGOERLI_KEY;
+//O-Goerli 0x1A4 - Ganache 0x539
 // const CHAIN_ID = '0x539'
 // const networkID: number = 35;
-const CHAIN_ID = '0x3'
-const networkID: number = 3; 
+const CHAIN_ID = '0x1A4'
+const networkID: number = 420; 
 
 const networkIdToUrl = {
     '1': 'https://etherscan.io/tx',
-    '3': 'https://ropsten.etherscan.io/tx',
     '5': 'https://goerli.etherscan.io/tx',
-    '35': 'localhost'
+    '35': 'localhost',
+    '420': 'https://goerli-optimism.etherscan.io/tx'
 }
 const notifyOptions: InitOptions = {
     dappId: environment.BLOCK_NATIVE_KEY,
@@ -45,9 +45,9 @@ const onboard = Onboard({
     chains: [
       {
         id: CHAIN_ID,
-        token: 'tROP',
-        label: 'Ethereum Ropsten Testnet',
-        rpcUrl: ROPSTEN_RPC_URL
+        token: 'ogETH',
+        label: 'Optimism Goerli Testnet',
+        rpcUrl: O_GOERLI_RPC_URL
       }
     ],
     appMetadata: {
@@ -178,23 +178,30 @@ export class Web3Service {
       })
   }
 
-  public mintToken(instance, _receiver, _amount) {
+  public mint(instance, _receiver, _amount) {
       let self = this;
-      instance.mintToken.sendTransaction( _receiver, _amount, {from:self.address}).on('transactionHash', function(hash){
+      instance.mint.sendTransaction( _receiver, _amount, {from:self.address}).on('transactionHash', function(hash){
         self.notifyBlockNative(self, hash);
       })
   }
 
-  public setPrices(instance, _sellAmount, _buyAmount) {
+  public delegate(instance, _delegate) {
       let self = this;
-      instance.setPrices.sendTransaction( _sellAmount, _buyAmount, {from:self.address}).on('transactionHash', function(hash){
+      instance.delegate.sendTransaction( _delegate, {from:self.address}).on('transactionHash', function(hash){
         self.notifyBlockNative(self, hash);
       })
   }
 
-  public allowBuySell(instance) {
+//   public setPrices(instance, _sellAmount, _buyAmount) {
+//       let self = this;
+//       instance.setPrices.sendTransaction( _sellAmount, _buyAmount, {from:self.address}).on('transactionHash', function(hash){
+//         self.notifyBlockNative(self, hash);
+//       })
+//   }
+
+  public pause(instance) {
       let self = this;
-      instance.allowBuySell.sendTransaction({from:self.address}).on('transactionHash', function(hash){
+      instance.pause.sendTransaction({from:self.address}).on('transactionHash', function(hash){
         self.notifyBlockNative(self, hash);
       })
   }

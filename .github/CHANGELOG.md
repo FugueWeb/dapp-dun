@@ -1,4 +1,11 @@
-# Change Log: Decentralized UN
+# Change Log: Decentralized Governance
+
+## 2022102
+
+* Version 4.0
+* Converting smart contracts to Optimism Goerli Testnet
+* Utilizing Open Zeppelin governance and token contracts
+* Changes to front end to account for new contract functionality
 
 ## 20220421
 

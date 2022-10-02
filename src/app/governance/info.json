@@ -24,7 +24,7 @@
         "desc": "Set the market price (in wei, the smallest domination of ETH) for the DUN token. The token contract should be funded with sufficient ETH in order for the marketplace to work properly. Once the buy/sell prices are set, call `allowBuySell`, which will effectively open the market for business."
     },
     {
-        "id": "allowBuySell",
+        "id": "pause",
         "desc": "Toggle permission to allow/deny other users on the network to buy or sell DUN tokens."
     },
     {
@@ -42,7 +42,11 @@
     {
         "id": "buyTokens",
         "desc": "Buy DUN tokens from the contract. The amount of tokens you will receive is proportionate to the amount of ether you send to the contract (i.e., amount of ETH in wei / price of DUN token). For example, if the buy price is 0.1 ETH and you send 0.2 ETH, you would get two DUN tokens (assuming the contract had at least two DUN tokens available for sale)."
-    },    
+    },
+    {
+        "id": "delegate",
+        "desc": "Delegate tokens for voting."
+    },   
     {
         "id": "convertETHtoWei",
         "desc": "A helper function to convert ETH to its smallest denomination, wei. 1 ETH in wei is a one followed by eighteen zeros."

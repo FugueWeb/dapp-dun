@@ -33,6 +33,7 @@ npm-debug.log
 testem.log
 /typings
 /misc
+/temp
 /constants
 app.env
 /src/app/models/participants.json
@@ -40,6 +41,7 @@ app.env
 /src/environments/environment.ts
 /src/environments/environment.prod.ts
 notes.md
+/contracts/Test
 
 # e2e
 /e2e/*.js
